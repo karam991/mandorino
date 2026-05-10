@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/abdulkarimalnaser/mandorino/node_modules/.bin/tsc --version)",
+      "Bash(ls -la /Users/abdulkarimalnaser/mandorino/.env*)",
+      "Bash(npx tsc:*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(command -v node)",
+      "Bash(command -v npm)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/abdulkarimalnaser/.nvm/versions/**)",
+      "Bash(PATH=\"/usr/local/bin:$PATH\" /usr/local/bin/node node_modules/.bin/tsc --noEmit)",
+      "Bash(pandoc --track-changes=all \"/Users/abdulkarimalnaser/Downloads/RE CRM User Stories.docx\" -o /tmp/re_crm_user_stories.md)",
+      "Read(//tmp/**)",
+      "Read(//Users/abdulkarimalnaser/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/2bd46061-6971-4807-81cb-2c0d043f2c26/9bf235ad-b72c-46bc-b9b0-a60376053d65/skills/docx/**)",
+      "Bash(python scripts/office/unpack.py \"/Users/abdulkarimalnaser/Downloads/RE CRM User Stories.docx\" /tmp/re_crm_unpacked/)",
+      "Bash(python3 scripts/office/unpack.py \"/Users/abdulkarimalnaser/Downloads/RE CRM User Stories.docx\" /tmp/re_crm_unpacked/)",
+      "Bash(mkdir -p /tmp/re_crm_unpacked)",
+      "Bash(unzip -o \"/Users/abdulkarimalnaser/Downloads/RE CRM User Stories.docx\" -d /tmp/re_crm_unpacked/)"
+    ]
+  }
+}
