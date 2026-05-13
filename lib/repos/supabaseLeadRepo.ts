@@ -1,5 +1,6 @@
 import type {
   ClaimValueBucket,
+  ClientType,
   InsuranceInfo,
   Lead,
   LeadHistoryEntry,
@@ -25,6 +26,7 @@ interface SupabaseLeadRow {
   created_at: string;
   area_id: string;
   area_label: string;
+  client_type: ClientType;
   area_data: Record<string, unknown>;
   urgency: string;
   user_notes: string | null;
@@ -45,6 +47,7 @@ function rowToLead(r: SupabaseLeadRow): Lead {
     createdAt: r.created_at,
     areaId: r.area_id,
     areaLabel: r.area_label,
+    clientType: r.client_type ?? "private",
     areaData: r.area_data,
     urgency: r.urgency as Lead["urgency"],
     userNotes: r.user_notes ?? undefined,
@@ -66,6 +69,7 @@ function leadToRow(lead: Lead): SupabaseLeadRow {
     created_at: lead.createdAt,
     area_id: lead.areaId,
     area_label: lead.areaLabel,
+    client_type: lead.clientType,
     area_data: lead.areaData,
     urgency: lead.urgency,
     user_notes: lead.userNotes ?? null,
