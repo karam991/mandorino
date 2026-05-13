@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 
-import { DEFAULT_CLAUDE_MODEL } from "@/lib/constants";
 import { buildTemplateSummary } from "@/lib/templateSummary";
 import type { LeadDraft } from "@/lib/types";
 
@@ -9,8 +7,8 @@ export const runtime = "nodejs";
 
 /**
  * Erzeugt eine neutrale, strukturierte Zusammenfassung des Mandanten-Anliegens
- * für das Anwalts-Dashboard. Verwendet Claude, wenn ANTHROPIC_API_KEY gesetzt
- * ist; sonst Template-Fallback.
+ * für das Anwalts-Dashboard. Verwendet Mistral (EU-Anbieter), wenn
+ * MISTRAL_API_KEY gesetzt ist; sonst Template-Fallback.
  *
  * COMPLIANCE: Der System-Prompt verbietet jegliche rechtliche Bewertung,
  * Empfehlung oder Einschätzung von Erfolgsaussichten. Output muss rein
@@ -60,7 +58,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Feld `draft` fehlt." }, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.MISTRAL_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json<SummarizeResponse>({
@@ -70,21 +68,37 @@ export async function POST(req: Request) {
   }
 
   try {
-    const client = new Anthropic({ apiKey });
-    const model = process.env.ANTHROPIC_MODEL ?? DEFAULT_CLAUDE_MODEL;
+    const model = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
 
-    const response = await client.messages.create({
-      model,
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: formatDraftForClaude(draft) }],
+    const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1024,
+        temperature: 0.3,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: formatDraftForLLM(draft) },
+        ],
+      }),
     });
 
-    const text = response.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n")
-      .trim();
+    if (!res.ok) {
+      console.error("Mistral-Aufruf fehlgeschlagen:", res.status, await res.text());
+      return NextResponse.json<SummarizeResponse>({
+        summary: buildTemplateSummary(draft),
+        source: "template",
+      });
+    }
+
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const text = data.choices?.[0]?.message?.content?.trim() ?? "";
 
     if (!text) {
       return NextResponse.json<SummarizeResponse>({
@@ -95,7 +109,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json<SummarizeResponse>({ summary: text, source: "claude" });
   } catch (err) {
-    console.error("Claude-Aufruf fehlgeschlagen, nutze Template:", err);
+    console.error("Mistral-Aufruf fehlgeschlagen, nutze Template:", err);
     return NextResponse.json<SummarizeResponse>({
       summary: buildTemplateSummary(draft),
       source: "template",
@@ -103,7 +117,7 @@ export async function POST(req: Request) {
   }
 }
 
-function formatDraftForClaude(draft: LeadDraft): string {
+function formatDraftForLLM(draft: LeadDraft): string {
   const lines: string[] = [
     `Mandantenangaben aus dem Online-Chat (Rechtsgebiet: ${draft.areaLabel ?? "—"}). Bitte neutral zusammenfassen.`,
   ];

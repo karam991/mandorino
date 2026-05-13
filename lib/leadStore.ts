@@ -257,6 +257,7 @@ export function seedDemoLeadsIfEmpty(): void {
       createdAt: overrides.createdAt ?? new Date(now).toISOString(),
       areaId,
       areaLabel,
+       clientType: overrides.clientType ?? "private",
       areaData,
       urgency: overrides.urgency ?? "Innerhalb dieser Woche",
       userNotes: overrides.userNotes,
