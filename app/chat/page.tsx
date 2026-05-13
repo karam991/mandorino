@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ChatContainer } from "@/components/ChatContainer";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Footer } from "@/components/Footer";
@@ -15,7 +16,9 @@ export default function ChatPage() {
       <DisclaimerBanner />
 
       <main className="flex-1 bg-paper">
-        <ChatContainer variant="page" />
+        <Suspense fallback={<div className="p-8 text-center text-muted">Lade Chat…</div>}>
+          <ChatContainer variant="page" />
+        </Suspense>
       </main>
 
       <Footer />

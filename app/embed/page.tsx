@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
+import { Suspense, useEffect, useRef } from "react";
 import { ChatContainer } from "@/components/ChatContainer";
 import { TENANT } from "@/lib/tenant.config";
 
@@ -65,7 +64,9 @@ export default function EmbedPage() {
         <span className="text-xs opacity-80">Anfrage · keine Rechtsberatung</span>
       </div>
 
-      <ChatContainer variant="embed" successPath={(id) => `/embed/danke?lead=${encodeURIComponent(id)}`} />
+     <Suspense fallback={<div className="p-4 text-center text-muted">Lade…</div>}>
+  <ChatContainer variant="embed" successPath={(id) => `/embed/danke?lead=${encodeURIComponent(id)}`} />
+</Suspense>
     </div>
   );
 }
