@@ -67,13 +67,20 @@ export interface TenantConfig {
 }
 
 /**
- * Demo-Tenant: fiktive Kanzlei „Kanzlei Beispiel & Partner".
- * Ersetze diese Werte beim Onboarding einer echten Kanzlei.
+ * Demo-Tenant: fiktive Kanzlei „Hartmann & Kollegen".
+ *
+ * Diese Identität läuft öffentlich auf mandorino.vercel.app und wird in
+ * Sales-Demos verwendet. Sie matched die Mock-Kanzlei-Website
+ * (hartmann-kollegen-demo.vercel.app) — Header, Embed-Modal und
+ * Mandorino-Tool zeigen alle denselben Kanzlei-Namen, damit der
+ * Pitch konsistent wirkt.
+ *
+ * Beim Onboarding einer echten Kanzlei: kompletten Block ersetzen.
  */
 export const TENANT: TenantConfig = {
   brand: {
-    kanzleiName: "Kanzlei Beispiel & Partner",
-    tagline: "Verstehen. Strukturieren. Vertreten.",
+    kanzleiName: "Hartmann & Kollegen",
+    tagline: "Rechtsanwälte · Verstehen. Strukturieren. Vertreten.",
     logoUrl: null, // null → Text-Logo-Fallback
     primary: "#13315C", // ink
     accent: "#C9A86A", // gold
@@ -90,19 +97,23 @@ export const TENANT: TenantConfig = {
     "mietrecht",
     "erbrecht",
   ],
+  // Demo-Logins für Sales-Pitches.
+  // Passwörter sind absichtlich „demo-tauglich": kurz genug zum Live-Tippen,
+  // aber nicht offensichtlich Test (kein „kanzlei123"). Vor Production-Launch
+  // einer echten Kanzlei: Passwörter raus, Supabase-Auth einsetzen.
   team: [
     {
       id: "user_admin",
-      name: "RA Demo",
-      email: "anwalt@example.de",
-      password: "kanzlei123",
+      name: "Dr. Thomas Hartmann",
+      email: "t.hartmann@hartmann-kollegen.de",
+      password: "Demo2026!",
       role: "admin",
     },
     {
       id: "user_assistenz",
-      name: "Sekretariat Demo",
-      email: "sekretariat@example.de",
-      password: "kanzlei123",
+      name: "Sandra Bauer",
+      email: "s.bauer@hartmann-kollegen.de",
+      password: "Demo2026!",
       role: "bearbeiter",
     },
   ],

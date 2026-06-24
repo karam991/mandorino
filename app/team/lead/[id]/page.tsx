@@ -13,6 +13,7 @@ import {
   changeStatus,
   getLeadById,
 } from "@/lib/leadStore";
+import { downloadLeadCsv, downloadLeadJson } from "@/lib/exportLead";
 import { getCurrentUser, listTeam, verifySession, type SessionUser } from "@/lib/authStore";
 import {
   LEAD_STATUSES,
@@ -98,12 +99,41 @@ export default function LeadDetailPage() {
       <Header variant="team" />
       <main className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
-          <Link
-            href="/team/dashboard"
-            className="text-sm brand-text underline mb-4 inline-block"
-          >
-            ← Zurück zur Übersicht
-          </Link>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <Link
+              href="/team/dashboard"
+              className="text-sm brand-text underline"
+            >
+              ← Zurück zur Übersicht
+            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => downloadLeadCsv(lead)}
+                className="btn-secondary text-sm"
+                title="Lead als CSV exportieren (Excel-kompatibel)"
+              >
+                CSV
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadLeadJson(lead)}
+                className="btn-secondary text-sm"
+                title="Vollständige Daten als JSON exportieren (Art. 20 DSGVO — Portabilität)"
+              >
+                JSON
+              </button>
+              <Link
+                href={`/team/lead/${lead.id}/auskunft`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-sm"
+                title="Druckansicht für Mandanten-Auskunft nach Art. 15 DSGVO (als PDF speicherbar)"
+              >
+                Auskunft (PDF) ↗
+              </Link>
+            </div>
+          </div>
 
           <div className="grid lg:grid-cols-3 gap-4">
             {/* Hauptspalte */}

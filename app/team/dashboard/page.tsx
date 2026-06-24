@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { PriorityPill, StatusPill } from "@/components/StatusPill";
 import { getCurrentUser, listTeam, logout, verifySession, type SessionUser } from "@/lib/authStore";
 import { getAllLeads, seedDemoLeadsIfEmpty } from "@/lib/leadStore";
+import { downloadAllLeadsCsv } from "@/lib/exportLead";
 import { TENANT } from "@/lib/tenant.config";
 import { getActivePracticeAreaIds } from "@/lib/tenantOverrides";
 import { listPracticeAreas } from "@/lib/areas/registry";
@@ -134,7 +135,16 @@ export default function DashboardPage() {
                 Angemeldet als {user.name} ({user.role}) · {TENANT.brand.kanzleiName}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                type="button"
+                onClick={() => downloadAllLeadsCsv(filtered, statusFilter)}
+                disabled={filtered.length === 0}
+                className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Aktuelle gefilterte Lead-Liste als CSV exportieren (Excel-kompatibel)"
+              >
+                Export CSV ({filtered.length})
+              </button>
               <Link href="/team/analytics" className="btn-secondary">
                 Auswertung
               </Link>
