@@ -219,7 +219,7 @@ export default function LeadDetailPage() {
                     </p>
                     <p className="text-xs text-muted mt-2">
                       {lead.aiSummarySource === "claude"
-                        ? "KI-Reformulierung (Claude)"
+                        ? "KI-Reformulierung"
                         : "Strukturvorlage"}{" "}
                       · ohne rechtliche Bewertung
                     </p>

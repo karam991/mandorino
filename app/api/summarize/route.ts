@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { DEFAULT_SUMMARY_MODEL } from "@/lib/constants";
 import { PayloadTooLargeError, rateLimit, readJsonLimited } from "@/lib/server/guard";
 import { buildTemplateSummary } from "@/lib/templateSummary";
 import type { LeadDraft } from "@/lib/types";
@@ -43,6 +44,7 @@ interface SummarizeRequest {
 
 interface SummarizeResponse {
   summary: string;
+  /** "claude" ist ein historischer Bezeichner für „KI-Zusammenfassung" (Provider: Mistral) — er steckt im DB-Check-Constraint und bleibt aus Kompatibilitätsgründen. */
   source: "claude" | "template";
 }
 
@@ -80,7 +82,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const model = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
+    const model = process.env.MISTRAL_MODEL ?? DEFAULT_SUMMARY_MODEL;
 
     const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
       method: "POST",

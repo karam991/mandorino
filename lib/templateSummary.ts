@@ -1,7 +1,7 @@
 import type { LeadDraft } from "./types";
 
 /**
- * Template-basierte Zusammenfassung als Fallback, wenn Claude nicht
+ * Template-basierte Zusammenfassung als Fallback, wenn die KI nicht
  * verfügbar ist (kein API-Key, Netzwerkfehler, Rate-Limit etc.).
  *
  * Stilrichtlinie: rein deskriptiv, keine Bewertung, keine Empfehlung.
