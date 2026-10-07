@@ -45,11 +45,15 @@ const config: Config = {
       },
       keyframes: {
         "fade-up": { "0%": { opacity: "0", transform: "translateY(14px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        shake: { "0%,100%": { transform: "translateX(0)" }, "20%,60%": { transform: "translateX(-6px)" }, "40%,80%": { transform: "translateX(6px)" } },
+        swing: { "0%,100%": { transform: "rotate(-2.5deg)" }, "50%": { transform: "rotate(2.5deg)" } },
         float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
       },
       animation: {
         "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
         float: "float 7s ease-in-out infinite",
+        shake: "shake 0.45s ease-in-out",
+        swing: "swing 6s ease-in-out infinite",
       },
       boxShadow: {
         lift: "0 12px 32px rgba(11, 31, 58, 0.14)",
