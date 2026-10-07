@@ -110,6 +110,14 @@ export const TENANT: TenantConfig = {
       role: "admin",
     },
     {
+      // Demo-Admin: Passwort steht NICHT im Code. Der Supabase-Auth-User wird im
+      // Supabase-Dashboard angelegt (Authentication > Users > Add user).
+      id: "user_admin_demo",
+      name: "Admin",
+      email: "admin@hartmann-kollegen.de",
+      role: "admin",
+    },
+    {
       id: "user_assistenz",
       name: "Sandra Bauer",
       email: "s.bauer@hartmann-kollegen.de",
