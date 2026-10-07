@@ -33,7 +33,7 @@ export default function ChatPage() {
             Ein ruhiges, geführtes Gespräch — in Ihrem Tempo. Sie können jederzeit pausieren.
           </p>
           <ul className="animate-fade-up delay-2 mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
-            {["Vertraulich", "Kostenlos & unverbindlich", "Rückmeldung durch die Kanzlei"].map((t) => (
+            {["Vertraulich", "Unverbindlich", "Rückmeldung durch die Kanzlei"].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--brand-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="m4 10.5 4 4 8-9" />
@@ -45,7 +45,7 @@ export default function ChatPage() {
         </div>
       </section>
 
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <Suspense fallback={<div className="p-8 text-center text-muted">Lade Chat…</div>}>
           <ChatContainer variant="page" />
         </Suspense>

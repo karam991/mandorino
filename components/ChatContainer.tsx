@@ -46,6 +46,16 @@ interface ChatContainerProps {
  * Chat-Logik & UI — wird von /chat (mit Header/Footer) und /embed (ohne) gleichermaßen
  * benutzt. Unterscheidung läuft nur über `variant` (Höhen, Padding) und `successPath`.
  */
+const PHASES = ["Thema", "Details", "Kontakt", "Prüfen"] as const;
+
+/** Ordnet jeden Chat-Schritt einer von vier sichtbaren Phasen zu. */
+function phaseOf(id: string): number {
+  if (["intro", "client_type", "area_select", "area_intro"].includes(id)) return 0;
+  if (id === "contact" || id === "consent") return 2;
+  if (id === "summary" || id === "done") return 3;
+  return 1;
+}
+
 export function ChatContainer({
   variant = "page",
   successPath = (id) => `/danke?lead=${encodeURIComponent(id)}`,
@@ -334,8 +344,26 @@ export function ChatContainer({
             </div>
           </div>
         </div>
+        <ol className="flex items-center gap-1.5" aria-label="Fortschritt">
+          {PHASES.map((label, i) => {
+            const cur = phaseOf(stepId);
+            const state = i < cur ? "done" : i === cur ? "current" : "todo";
+            return (
+              <li key={label} className="flex flex-col items-center gap-1" aria-current={state === "current" ? "step" : undefined}>
+                <span
+                  className={`h-1.5 w-8 rounded-full transition-all duration-500 sm:w-12 ${
+                    state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
+                  } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
+                />
+                <span className={`hidden text-[10px] sm:block ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
+                  {label}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-      <div ref={scrollRef} className={scrollClass}>
+      <div ref={scrollRef} className={scrollClass} role="log" aria-live="polite" aria-label="Chatverlauf">
         {messages.map((m) => (
           <ChatBubble key={m.id} sender={m.sender}>
             {m.text}

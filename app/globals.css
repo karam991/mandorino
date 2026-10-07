@@ -169,3 +169,9 @@
 .check-draw { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw-check 0.6s 0.45s ease-out forwards; }
 @keyframes draw-check { to { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) { .check-pop { animation: none; } .check-draw { animation: none; stroke-dashoffset: 0; } }
+
+[data-reveal="hidden"] { opacity: 0; transform: translateY(22px); }
+[data-reveal="shown"] { opacity: 1; transform: none; transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] .faq-chevron { transform: rotate(180deg); }

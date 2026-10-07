@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Reveal } from "@/components/Reveal";
 import { listPracticeAreas, type PracticeAreaId } from "@/lib/areas/registry";
 import { getActivePracticeAreaIds } from "@/lib/tenantOverrides";
 import { TENANT } from "@/lib/tenant.config";
@@ -67,7 +68,7 @@ export default function HomePage() {
       <Header variant="client" />
       <DisclaimerBanner />
 
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         {/* ---- HERO ---- */}
         <section className="relative isolate overflow-hidden brand-bg text-white">
           <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
@@ -113,7 +114,7 @@ export default function HomePage() {
                 </Link>
               </div>
               <ul className="animate-fade-up delay-4 mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
-                {["Vertraulich", "Kostenlos & unverbindlich", "Persönliche Rückmeldung"].map((t) => (
+                {["Vertraulich", "Unverbindlich", "Persönliche Rückmeldung"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--brand-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="m4 10.5 4 4 8-9" />
@@ -169,7 +170,7 @@ export default function HomePage() {
               versteckten Kosten, keine Verpflichtung.
             </p>
           </div>
-          <ol className="relative grid sm:grid-cols-3 gap-5">
+          <Reveal><ol className="relative grid sm:grid-cols-3 gap-5">
             <div className="absolute left-0 right-0 top-7 hidden sm:block h-px bg-gradient-to-r from-transparent via-line to-transparent" aria-hidden="true" />
             {[
               {
@@ -198,7 +199,7 @@ export default function HomePage() {
                 <p className="text-sm text-muted leading-relaxed">{s.body}</p>
               </li>
             ))}
-          </ol>
+          </ol></Reveal>
         </section>
 
         {/* ---- RECHTSGEBIETE ---- */}
@@ -211,7 +212,7 @@ export default function HomePage() {
                 Wählen Sie Ihr Rechtsgebiet — wir starten direkt mit den passenden Fragen.
               </p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <Reveal><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {areas.map((a, i) => (
                 <Link
                   key={a.id}
@@ -229,13 +230,13 @@ export default function HomePage() {
                   </span>
                 </Link>
               ))}
-            </div>
+            </div></Reveal>
           </div>
         </section>
 
         {/* ---- WAS DER CHAT TUT / NICHT TUT ---- */}
         <section className="mx-auto max-w-page px-4 sm:px-6 py-20">
-          <div className="grid md:grid-cols-2 gap-5">
+          <Reveal><div className="grid md:grid-cols-2 gap-5">
             <div className="card p-8">
               <h3 className="text-lg font-semibold text-ink-dark mb-5">Was der Chat tut</h3>
               <ul className="space-y-3 text-sm text-ink-dark/90">
@@ -268,7 +269,72 @@ export default function HomePage() {
                 ))}
               </ul>
             </div>
-          </div>
+          </div></Reveal>
+        </section>
+
+        {/* ---- FAQ ---- */}
+        <section className="mx-auto max-w-3xl px-4 sm:px-6 pb-20">
+          <Reveal>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] brand-text">Häufige Fragen</span>
+            <h2 className="mt-3 mb-8 text-3xl sm:text-4xl font-semibold">Gut zu wissen</h2>
+            <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-soft">
+              {[
+                {
+                  q: "Ersetzt der Chat eine Rechtsberatung?",
+                  a: "Nein. Der Chat erfasst Ihr Anliegen vorab. Eine rechtliche Bewertung, eine Einschätzung der Erfolgsaussichten oder eine Handlungsempfehlung erfolgt dort nicht — das übernimmt die Kanzlei im persönlichen Gespräch.",
+                },
+                {
+                  q: "Was passiert mit meinen Angaben?",
+                  a: "Vor dem Absenden willigen Sie ausdrücklich ein, dass die Kanzlei Ihre Angaben zur Bearbeitung Ihrer Anfrage verarbeitet. Diese Einwilligung können Sie jederzeit widerrufen.",
+                },
+                {
+                  q: "Wie schnell erhalte ich eine Rückmeldung?",
+                  a: `Eine Anwältin oder ein Anwalt meldet sich in der Regel innerhalb ${TENANT.legal.rueckmeldungInnerhalb} persönlich bei Ihnen — telefonisch oder per E-Mail.`,
+                },
+                {
+                  q: "Kann ich eine Antwort ändern oder pausieren?",
+                  a: "Ja. Mit „Letzte Antwort ändern“ gehen Sie einen Schritt zurück, und Sie bestimmen Ihr Tempo selbst.",
+                },
+              ].map((f) => (
+                <details key={f.q} className="group px-6 py-5">
+                  <summary className="flex items-center justify-between gap-4 font-medium text-ink-dark">
+                    {f.q}
+                    <svg className="faq-chevron h-5 w-5 shrink-0 text-muted transition-transform duration-300" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m5 8 5 5 5-5" />
+                    </svg>
+                  </summary>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ---- ABSCHLUSS-CTA ---- */}
+        <section className="mx-auto max-w-page px-4 sm:px-6 pb-16">
+          <Reveal>
+            <div className="relative isolate overflow-hidden rounded-3xl brand-bg px-8 py-12 text-center text-white sm:px-14 sm:py-16">
+              <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
+              <div
+                className="absolute -bottom-32 left-1/2 -z-10 h-72 w-[34rem] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
+                style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
+                aria-hidden="true"
+              />
+              <h2 className="text-3xl font-semibold sm:text-4xl !text-white">
+                Bereit, Ihr Anliegen{" "}
+                <span className="italic" style={{ color: "var(--brand-accent)" }}>zu schildern?</span>
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-white/75">
+                Nehmen Sie sich die Zeit, die Sie brauchen. Wir hören zu.
+              </p>
+              <Link
+                href="/chat"
+                className="btn mt-8 !bg-[color:var(--brand-accent)] !text-[color:var(--brand-primary)] shadow-glow hover:brightness-110 !px-7 !py-3.5"
+              >
+                Anliegen schildern <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </Reveal>
         </section>
 
         <section className="mx-auto max-w-page px-4 sm:px-6 pb-20">

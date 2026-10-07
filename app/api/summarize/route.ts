@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { PayloadTooLargeError, rateLimit, readJsonLimited } from "@/lib/server/guard";
 import { buildTemplateSummary } from "@/lib/templateSummary";
 import type { LeadDraft } from "@/lib/types";
 
@@ -46,10 +47,21 @@ interface SummarizeResponse {
 }
 
 export async function POST(req: Request) {
+  // Der Aufruf kostet Geld (Mistral) — daher pro IP begrenzen und Body deckeln.
+  if (!rateLimit(req, "summarize", 20, 10 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Zu viele Anfragen. Bitte versuchen Sie es später erneut." },
+      { status: 429, headers: { "Retry-After": "600" } },
+    );
+  }
+
   let body: SummarizeRequest;
   try {
-    body = (await req.json()) as SummarizeRequest;
-  } catch {
+    body = await readJsonLimited<SummarizeRequest>(req, 64 * 1024);
+  } catch (e) {
+    if (e instanceof PayloadTooLargeError) {
+      return NextResponse.json({ error: "Anfrage zu groß." }, { status: 413 });
+    }
     return NextResponse.json({ error: "Ungültiger Request-Body" }, { status: 400 });
   }
 
