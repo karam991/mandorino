@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import { Fraunces, Inter } from "next/font/google";
 
 import { TENANT } from "@/lib/tenant.config";
 import "./globals.css";
+
+const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const serif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 
 export const metadata: Metadata = {
   title: `${TENANT.brand.kanzleiName} · Anliegen erfassen`,
@@ -15,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   } as React.CSSProperties;
 
   return (
-    <html lang="de" style={brandStyle}>
+    <html lang="de" style={brandStyle} className={`${sans.variable} ${serif.variable}`}>
       <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );

@@ -29,7 +29,9 @@ const config: Config = {
         danger: "#B23A48",
       },
       fontFamily: {
+        serif: ["var(--font-fraunces)", "ui-serif", "Georgia", "serif"],
         sans: [
+          "var(--font-inter)",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
@@ -41,7 +43,17 @@ const config: Config = {
           "sans-serif",
         ],
       },
+      keyframes: {
+        "fade-up": { "0%": { opacity: "0", transform: "translateY(14px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
+      },
+      animation: {
+        "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
+        float: "float 7s ease-in-out infinite",
+      },
       boxShadow: {
+        lift: "0 12px 32px rgba(11, 31, 58, 0.14)",
+        glow: "0 30px 80px rgba(0, 0, 0, 0.35)",
         soft: "0 1px 3px rgba(11, 31, 58, 0.06), 0 1px 2px rgba(11, 31, 58, 0.04)",
         card: "0 4px 16px rgba(11, 31, 58, 0.08)",
       },

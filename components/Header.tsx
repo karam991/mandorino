@@ -12,8 +12,8 @@ interface HeaderProps {
  */
 export function Header({ variant = "client" }: HeaderProps) {
   return (
-    <header className="brand-bg text-white">
-      <div className="mx-auto max-w-page px-4 sm:px-6 py-4 flex items-center justify-between">
+    <header className="brand-bg text-white sticky top-0 z-40 border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-[color:var(--brand-primary)]/90">
+      <div className="mx-auto max-w-page px-4 sm:px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Logo variant="white" />
           {variant === "team" && (
@@ -25,15 +25,15 @@ export function Header({ variant = "client" }: HeaderProps) {
         <nav className="flex items-center gap-1 sm:gap-2 text-sm">
           {variant === "client" ? (
             <>
-              <Link href="/" className="px-3 py-2 rounded-md hover:bg-white/10">
+              <Link href="/" className="hidden sm:inline-block px-3 py-2 rounded-md hover:bg-white/10">
                 Start
               </Link>
-              <Link href="/chat" className="px-3 py-2 rounded-md hover:bg-white/10">
+              <Link href="/chat" className="hidden sm:inline-block px-3 py-2 rounded-md hover:bg-white/10">
                 Anliegen schildern
               </Link>
               <Link
                 href="/team/login"
-                className="ml-1 px-3 py-2 rounded-md border border-white/30 hover:bg-white/10"
+                className="ml-1 px-3 py-2 rounded-md border border-white/30 hover:bg-white/10 whitespace-nowrap"
               >
                 Team-Login
               </Link>
