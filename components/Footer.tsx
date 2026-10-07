@@ -2,23 +2,23 @@ import { TENANT } from "@/lib/tenant.config";
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-white mt-16">
-      <div className="mx-auto max-w-page px-4 sm:px-6 py-8 text-sm text-muted flex flex-col sm:flex-row items-center justify-between gap-3">
+    <footer className="mt-16 brand-bg text-white/75">
+      <div className="mx-auto flex max-w-page flex-col items-center justify-between gap-4 px-4 py-10 text-sm sm:flex-row sm:px-6">
         <div>
-          © {new Date().getFullYear()} {TENANT.brand.kanzleiName}
+          <div className="font-semibold tracking-tight text-white">{TENANT.brand.kanzleiName}</div>
+          <div className="mt-0.5 text-xs text-white/55">
+            © {new Date().getFullYear()} · {TENANT.brand.tagline}
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <a href={TENANT.legal.impressumUrl} className="hover:text-ink-dark">
+        <div className="flex items-center gap-5">
+          <a href={TENANT.legal.impressumUrl} className="transition-colors hover:text-white">
             Impressum
           </a>
-          <span className="hidden sm:inline">·</span>
-          <a href={TENANT.legal.datenschutzUrl} className="hover:text-ink-dark">
+          <a href={TENANT.legal.datenschutzUrl} className="transition-colors hover:text-white">
             Datenschutz
           </a>
-          <span className="hidden sm:inline">·</span>
-          <span className="text-xs">
-            Vorab-Erfassung mit{" "}
-            <span className="font-medium">Mandorino</span>
+          <span className="hidden text-xs text-white/50 sm:inline">
+            Vorab-Erfassung mit <span className="font-medium text-white/80">Mandorino</span>
           </span>
         </div>
       </div>

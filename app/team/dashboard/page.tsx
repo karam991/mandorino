@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect as useEffectK, useState as useStateK } from "react";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -127,10 +129,10 @@ export default function DashboardPage() {
       <main className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           {/* Top-Leiste */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-7 animate-fade-up">
             <div>
               <span className="pill bg-ink/10 text-ink-dark mb-2">Lead-Übersicht</span>
-              <h1 className="text-2xl font-bold">Eingegangene Anfragen</h1>
+              <h1 className="text-3xl sm:text-4xl font-semibold">Eingegangene Anfragen</h1>
               <p className="text-sm text-muted mt-1">
                 Angemeldet als {user.name} ({user.role}) · {TENANT.brand.kanzleiName}
               </p>
@@ -155,14 +157,14 @@ export default function DashboardPage() {
           </div>
 
           {/* KPIs */}
-          <div className="grid sm:grid-cols-3 gap-3 mb-5">
+          <div className="grid sm:grid-cols-3 gap-4 mb-6 animate-fade-up delay-1">
             <Kpi label="Leads gesamt" value={counts.total} />
             <Kpi label="Offen (neu / in Bearbeitung / kontaktiert)" value={counts.open} />
             <Kpi label="Mir zugewiesen" value={counts.mine} />
           </div>
 
           {/* Filter-Leiste */}
-          <div className="card p-4 mb-4 flex flex-wrap gap-3 items-end">
+          <div className="card p-4 mb-5 flex flex-wrap gap-3 items-end animate-fade-up delay-2">
             <FilterField label="Status">
               <select
                 className="input py-2"
@@ -234,13 +236,19 @@ export default function DashboardPage() {
 
           {/* Liste */}
           {filtered.length === 0 ? (
-            <div className="card p-8 text-center text-muted">
-              Keine Leads für diese Filter-Kombination.
+            <div className="card p-12 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-paper text-ink">
+                <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 5h16v11H8l-4 4V5Z" />
+                </svg>
+              </div>
+              <p className="font-serif text-xl font-semibold text-ink-dark">Keine Anfragen gefunden</p>
+              <p className="mt-1 text-sm text-muted">Für diese Filter-Kombination gibt es aktuell keine Leads.</p>
             </div>
           ) : (
-            <div className="card overflow-x-auto">
+            <div className="card overflow-x-auto animate-fade-up delay-3">
               <table className="w-full text-sm">
-                <thead className="bg-paper-dark text-left text-xs uppercase tracking-wide text-muted">
+                <thead className="bg-paper text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                   <tr>
                     <th className="px-4 py-3">Eingang</th>
                     <th className="px-4 py-3">Mandant</th>
@@ -261,7 +269,7 @@ export default function DashboardPage() {
                     const docs = (l.areaData as Record<string, unknown>)?.documents;
                     const docCount = Array.isArray(docs) ? docs.length : 0;
                     return (
-                      <tr key={l.id} className="border-t border-line hover:bg-paper-dark/40">
+                      <tr key={l.id} className="group border-t border-line transition-colors hover:bg-paper/70">
                         <td className="px-4 py-3 whitespace-nowrap text-muted">
                           {new Date(l.createdAt).toLocaleString("de-DE", {
                             day: "2-digit",
@@ -272,6 +280,9 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2 flex-wrap">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full brand-bg text-[10px] font-semibold text-white" aria-hidden="true">
+                              {(l.contact.firstName?.[0] ?? "") + (l.contact.lastName?.[0] ?? "")}
+                            </span>
                             <span className="font-medium text-ink-dark">
                               {l.contact.firstName} {l.contact.lastName}
                             </span>
@@ -321,9 +332,9 @@ export default function DashboardPage() {
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`/team/lead/${l.id}`}
-                            className="text-xs brand-text underline"
+                            className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all group-hover:border-ink/40 group-hover:shadow-soft"
                           >
-                            Öffnen →
+                            Öffnen <span className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true">→</span>
                           </Link>
                         </td>
                       </tr>
@@ -341,10 +352,28 @@ export default function DashboardPage() {
 }
 
 function Kpi({ label, value }: { label: string; value: number }) {
+  const [shown, setShown] = useStateK(0);
+  useEffectK(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(value);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const dur = 700;
+    const tick = (now: number) => {
+      const k = Math.min((now - start) / dur, 1);
+      setShown(Math.round(value * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
   return (
-    <div className="card p-4">
-      <div className="text-xs uppercase tracking-wide text-muted">{label}</div>
-      <div className="text-2xl font-bold mt-1">{value}</div>
+    <div className="card relative overflow-hidden p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[color:var(--brand-accent)] to-transparent" aria-hidden="true" />
+      <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-2 font-serif text-4xl font-semibold tabular-nums text-ink-dark">{shown}</div>
     </div>
   );
 }
