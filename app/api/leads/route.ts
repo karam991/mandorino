@@ -2,24 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { dispatchLead } from "@/lib/notifications/dispatch";
 import { PayloadTooLargeError, rateLimit, readJsonLimited } from "@/lib/server/guard";
+import { parseLeadInput } from "@/lib/server/leadInput";
 import { getServerLeadRepo } from "@/lib/repos/supabaseLeadRepo";
 import { TENANT } from "@/lib/tenant.config";
-import type { Lead } from "@/lib/types";
 
 export const runtime = "nodejs"; // SMTP & längere Webhooks → kein Edge
 
 /**
  * POST /api/leads
- * Body: { lead: Lead }
+ * Body: { lead: <Mandantenangaben>, consentGiven: true }
  *
- * Verteilt einen frisch erstellten Lead an alle in `tenant.config.notifications`
- * konfigurierten Channels (Email/Slack/Teams/Webhook). Die eigentliche
- * Persistenz übernimmt — solange wir noch im localStorage-MVP sind — der
- * Client. Sobald die Supabase-Phase live ist, schreibt diese Route den Lead
- * zusätzlich in die Datenbank.
+ * Der Client liefert nur Mandantenangaben. id, Zeitstempel, Status, Historie
+ * und Priorität erzeugt der Server (`parseLeadInput`) — Client-Werte dafür
+ * werden ignoriert. Danach: Persistenz (Supabase, falls konfiguriert) und
+ * Benachrichtigung über alle Channels aus `tenant.config.notifications`.
+ *
+ * Antwort: { ok: true, id } oder { ok: false, error }. Wurde der Lead weder
+ * gespeichert noch an einen Channel zugestellt, antwortet die Route mit 500,
+ * damit der Mandant NICHT fälschlich „Erfolg" sieht.
  */
 const MAX_BODY_BYTES = 64 * 1024; // ein Lead ist wenige KB — alles darüber ist Missbrauch
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,9 +33,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let body: { lead?: Lead };
+    let body: unknown;
     try {
-      body = await readJsonLimited<{ lead?: Lead }>(req, MAX_BODY_BYTES);
+      body = await readJsonLimited<unknown>(req, MAX_BODY_BYTES);
     } catch (e) {
       const tooLarge = e instanceof PayloadTooLargeError;
       return NextResponse.json(
@@ -41,19 +43,18 @@ export async function POST(req: NextRequest) {
         { status: tooLarge ? 413 : 400 },
       );
     }
-    const lead = body?.lead;
-    if (
-      !lead ||
-      typeof lead.id !== "string" ||
-      lead.id.length === 0 ||
-      lead.id.length > 100 ||
-      typeof lead.contact?.email !== "string" ||
-      lead.contact.email.length > 254 ||
-      !EMAIL_RE.test(lead.contact.email)
-    ) {
+
+    const parsed = parseLeadInput(body);
+    if (!parsed.ok) {
+      return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 });
+    }
+    const lead = parsed.lead;
+
+    // Zweites, engeres Limit pro Mandanten-E-Mail (gegen Flooding fremder Postfächer).
+    if (!rateLimit(req, `leads:${lead.contact.email.toLowerCase()}`, 3, 60 * 60 * 1000)) {
       return NextResponse.json(
-        { ok: false, error: "Ungültiger Lead." },
-        { status: 400 },
+        { ok: false, error: "Zu viele Anfragen. Bitte versuchen Sie es später erneut." },
+        { status: 429, headers: { "Retry-After": "3600" } },
       );
     }
 
@@ -62,15 +63,18 @@ export async function POST(req: NextRequest) {
       process.env.MANDORINO_PUBLIC_URL ||
       `${req.nextUrl.protocol}//${req.nextUrl.host}`;
 
-    // Optional: Supabase-Persistenz, falls konfiguriert.
-    // Solange keine SUPABASE-Env-Vars gesetzt sind, übernimmt der Client
-    // weiterhin localStorage — Lead-Verlust ist trotzdem ausgeschlossen,
-    // weil die Notifications den Inhalt an die Kanzlei pushen.
+    // Persistenz, falls Supabase konfiguriert ist.
+    let persistenceConfigured = false;
+    let persisted = false;
     try {
       const repo = await getServerLeadRepo();
-      if (repo) await repo.save(lead);
+      if (repo) {
+        persistenceConfigured = true;
+        await repo.save(lead);
+        persisted = true;
+      }
     } catch (e) {
-      console.warn("[supabase] save fehlgeschlagen — Lead nur via Notifications zugestellt:", e);
+      console.error("[supabase] save fehlgeschlagen:", e);
     }
 
     const results = await dispatchLead(lead, {
@@ -86,7 +90,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true, results });
+    // Verloren = Persistenz wird erwartet (Supabase irgendwo konfiguriert), wurde aber nicht
+    // geschrieben UND kein Channel hat zugestellt. Deckt auch Fehlkonfiguration ab
+    // (z. B. nur NEXT_PUBLIC_-Variablen gesetzt, Service-Role-Key fehlt).
+    const delivered = results.some((r) => r.ok);
+    const persistenceExpected =
+      persistenceConfigured ||
+      Boolean(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL);
+    if (persistenceExpected && !persisted && !delivered) {
+      if (!persistenceConfigured) {
+        console.error("[supabase] Persistenz erwartet, aber SUPABASE_SERVICE_ROLE_KEY fehlt.");
+      }
+      return NextResponse.json(
+        { ok: false, error: "Ihre Anfrage konnte nicht gespeichert werden. Bitte versuchen Sie es erneut." },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ ok: true, id: lead.id });
   } catch (e) {
     console.error("[/api/leads] unhandled", e);
     // Keine internen Fehlermeldungen an den Client — Details stehen im Server-Log.

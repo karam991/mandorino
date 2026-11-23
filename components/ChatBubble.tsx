@@ -20,7 +20,7 @@ export function TypingDots() {
 export function ChatBubble({ sender, children }: ChatBubbleProps) {
   const isBot = sender === "bot";
   return (
-    <div className={`flex ${isBot ? "justify-start" : "justify-end"} mb-3 animate-fade-up`}>
+    <div className={`flex ${isBot ? "justify-start" : "justify-end"} mb-3 animate-bubble-in`}>
       {isBot && (
         <div className="mr-2 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full brand-bg text-xs font-semibold text-white ring-2 ring-[color:var(--brand-accent)]/60">
           M

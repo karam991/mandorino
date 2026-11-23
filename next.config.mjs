@@ -1,3 +1,21 @@
+/**
+ * Wer darf /embed und /chat per iframe einbinden?
+ * EMBED_ALLOWED_ORIGINS="https://kanzlei.de,https://www.kanzlei.de" → nur diese (plus eigene Origin).
+ * Nicht gesetzt → jede Seite (Demo-/Entwicklungsbetrieb). In Produktion setzen,
+ * sonst kann jede fremde Seite das Formular einbetten (Clickjacking/Phishing-Risiko).
+ */
+const embedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter((o) => /^https?:\/\/[^\s;]+$/.test(o));
+const frameAncestors = embedOrigins.length
+  ? `frame-ancestors 'self' ${embedOrigins.join(" ")};`
+  : "frame-ancestors *;";
+if (!embedOrigins.length && process.env.NODE_ENV === "production" && !globalThis.__mandorinoEmbedWarned) {
+  globalThis.__mandorinoEmbedWarned = true;
+  console.warn("[mandorino] EMBED_ALLOWED_ORIGINS ist nicht gesetzt — /embed und /chat sind von jeder Seite einbettbar.");
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -19,22 +37,17 @@ const nextConfig = {
         headers: [{ key: "Content-Security-Policy", value: "frame-ancestors 'self';" }],
       },
       {
-        // /embed und /chat müssen in fremde Kanzlei-Seiten einbettbar sein.
-        // X-Frame-Options bewusst NICHT setzen: "ALLOWALL" ist kein gültiger
-        // Wert (Spec kennt nur DENY/SAMEORIGIN) und Safari interpretiert
-        // ungültige Werte als DENY. Stattdessen nur CSP frame-ancestors,
-        // das alle modernen Browser respektieren — und das X-Frame-Options
-        // laut Spec überschreibt.
-        source: "/embed",
-        headers: [
-          { key: "Content-Security-Policy", value: "frame-ancestors *;" },
-        ],
+        // /embed (inkl. /embed/danke) und /chat müssen in fremde Kanzlei-Seiten einbettbar sein.
+        // X-Frame-Options bewusst NICHT setzen: "ALLOWALL" ist kein gültiger Wert und Safari
+        // behandelt ungültige Werte als DENY. CSP frame-ancestors wird von allen modernen
+        // Browsern respektiert und überschreibt X-Frame-Options laut Spec.
+        // Erlaubte Einbettungs-Domains: EMBED_ALLOWED_ORIGINS (siehe oben).
+        source: "/embed/:path*",
+        headers: [{ key: "Content-Security-Policy", value: frameAncestors }],
       },
       {
         source: "/chat",
-        headers: [
-          { key: "Content-Security-Policy", value: "frame-ancestors *;" },
-        ],
+        headers: [{ key: "Content-Security-Policy", value: frameAncestors }],
       },
     ];
   },

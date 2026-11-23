@@ -18,11 +18,6 @@ export interface TenantTeamMember {
    * Auth-Users übereinstimmen (oder im MVP-Fallback mit der Login-Eingabe).
    */
   email: string;
-  /**
-   * Optional. Nur im MVP-Dev-Modus benutzt (ohne Supabase Auth).
-   * In Produktion wegslassen — dann erzwingt authStore zwingend Supabase.
-   */
-  password?: string;
   role: "admin" | "bearbeiter";
 }
 
@@ -44,6 +39,31 @@ export interface TenantLegal {
   datenschutzUrl: string;
   /** Sichtbar im Disclaimer: „Ein Anwalt unserer Kanzlei meldet sich…" */
   rueckmeldungInnerhalb: string; // z.B. "24 Stunden (werktags)"
+  /**
+   * Angaben für /impressum und /datenschutz (Anbieterkennzeichnung + Verantwortlicher).
+   * Alles, was noch in eckigen Klammern steht („[…]"), gilt als nicht ausgefüllt —
+   * die Seiten zeigen dann einen sichtbaren „Entwurf"-Hinweis.
+   */
+  provider: {
+    /** Name der Kanzlei inkl. Rechtsform, z.B. „Hartmann & Kollegen Rechtsanwälte PartG mbB". */
+    name: string;
+    street: string;
+    postalCity: string;
+    email: string;
+    phone: string;
+    /** Vertretungsberechtigte Person(en). */
+    representative: string;
+    /** Berufsbezeichnung + Staat der Verleihung. */
+    professionalTitle: string;
+    /** Zuständige Rechtsanwaltskammer inkl. Anschrift/URL. */
+    chamber: string;
+    /** USt-IdNr. oder Platzhalter, falls vorhanden. */
+    vatId: string;
+    /** Zuständige Datenschutz-Aufsichtsbehörde. */
+    supervisoryAuthority: string;
+    /** Aufbewahrungs-/Löschfrist für Anfragen, die nicht zum Mandat führen. */
+    retention: string;
+  };
 }
 
 export interface TenantConfig {
@@ -89,6 +109,20 @@ export const TENANT: TenantConfig = {
     impressumUrl: "/impressum",
     datenschutzUrl: "/datenschutz",
     rueckmeldungInnerhalb: "24 Stunden (werktags)",
+    // Fiktive Demo-Angaben. Beim Onboarding einer echten Kanzlei komplett ersetzen.
+    provider: {
+      name: "Hartmann & Kollegen Rechtsanwälte (Demo)",
+      street: "Musterstraße 12",
+      postalCity: "10115 Berlin",
+      email: "kontakt@hartmann-kollegen.de",
+      phone: "+49 30 0000000",
+      representative: "Dr. Thomas Hartmann",
+      professionalTitle: "Rechtsanwalt (verliehen in der Bundesrepublik Deutschland)",
+      chamber: "[Zuständige Rechtsanwaltskammer eintragen]",
+      vatId: "[USt-IdNr. eintragen oder Zeile streichen]",
+      supervisoryAuthority: "[Zuständige Datenschutz-Aufsichtsbehörde eintragen]",
+      retention: "[Löschfrist für nicht mandatierte Anfragen eintragen]",
+    },
   },
   practiceAreas: [
     "arbeitsrecht",
@@ -97,21 +131,19 @@ export const TENANT: TenantConfig = {
     "mietrecht",
     "erbrecht",
   ],
-  // Demo-Logins für Sales-Pitches.
-  // Passwörter sind absichtlich „demo-tauglich": kurz genug zum Live-Tippen,
-  // aber nicht offensichtlich Test (kein „kanzlei123"). Vor Production-Launch
-  // einer echten Kanzlei: Passwörter raus, Supabase-Auth einsetzen.
+  // Team-Verzeichnis für Anzeige/Zuweisung. KEINE Passwörter hier — die Zugriffs-
+  // berechtigung kommt aus der DB-Tabelle `tenant_team` + Supabase Auth.
+  // Demo-Modus: gemeinsames Passwort über NEXT_PUBLIC_DEMO_PASSWORD (siehe authStore).
   team: [
     {
       id: "user_admin",
       name: "Dr. Thomas Hartmann",
       email: "t.hartmann@hartmann-kollegen.de",
-      password: "Demo2026!",
       role: "admin",
     },
     {
-      // Demo-Admin: Passwort steht NICHT im Code. Der Supabase-Auth-User wird im
-      // Supabase-Dashboard angelegt (Authentication > Users > Add user).
+      // Der Supabase-Auth-User wird im Supabase-Dashboard angelegt
+      // (Authentication > Users > Add user) und in `tenant_team` eingetragen.
       id: "user_admin_demo",
       name: "Admin",
       email: "admin@hartmann-kollegen.de",
@@ -121,7 +153,6 @@ export const TENANT: TenantConfig = {
       id: "user_assistenz",
       name: "Sandra Bauer",
       email: "s.bauer@hartmann-kollegen.de",
-      password: "Demo2026!",
       role: "bearbeiter",
     },
   ],

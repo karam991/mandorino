@@ -9,6 +9,8 @@ import { getPracticeArea } from "@/lib/areas/registry";
 import { ENTRY_STEP, getStep, type StepId } from "@/lib/chatFlow";
 import { DISCLAIMER } from "@/lib/disclaimer";
 import { buildLeadFromDraft, saveLead } from "@/lib/leadStore";
+import { isSupabaseConfigured } from "@/lib/supabaseClient";
+import { TENANT } from "@/lib/tenant.config";
 import { buildTemplateSummary } from "@/lib/templateSummary";
 import { getActivePracticeAreaIds } from "@/lib/tenantOverrides";
 import { emptyDraft, type LeadDraft } from "@/lib/types";
@@ -30,7 +32,11 @@ interface UndoSnapshot {
   messageCount: number;
   summary: string | null;
   summarySource: "claude" | "template" | null;
+  summaryProof: SummaryProof | null;
 }
+
+/** Server-Signatur der Zusammenfassung (siehe lib/server/summarySignature.ts). */
+type SummaryProof = { ts: number; sig: string };
 
 interface ChatContainerProps {
   /**
@@ -82,6 +88,7 @@ export function ChatContainer({
   const [consent, setConsent] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [summarySource, setSummarySource] = useState<"claude" | "template" | null>(null);
+  const [summaryProof, setSummaryProof] = useState<SummaryProof | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<UndoSnapshot[]>([]);
@@ -185,6 +192,7 @@ export function ChatContainer({
       messageCount: messages.length,
       summary,
       summarySource,
+      summaryProof,
     };
   }
 
@@ -220,6 +228,7 @@ export function ChatContainer({
       setMessages((m) => m.slice(0, prev.messageCount));
       setSummary(prev.summary);
       setSummarySource(prev.summarySource);
+      setSummaryProof(prev.summaryProof);
       setTextInput("");
       setDateInput("");
       setMultiSel([]);
@@ -245,6 +254,7 @@ export function ChatContainer({
       setHistory([]);
       setSummary(null);
       setSummarySource(null);
+      setSummaryProof(null);
       setTextInput("");
       setDateInput("");
       setMultiSel([]);
@@ -277,40 +287,65 @@ export function ChatContainer({
         body: JSON.stringify({ draft: finalDraft }),
       });
       if (!res.ok) throw new Error("API-Antwort nicht ok");
-      const data = (await res.json()) as { summary: string; source: "claude" | "template" };
+      const data = (await res.json()) as {
+        summary: string;
+        source: "claude" | "template";
+        proof?: SummaryProof;
+      };
       setSummary(data.summary);
       setSummarySource(data.source);
+      setSummaryProof(data.proof ?? null);
     } catch {
       setSummary(buildTemplateSummary(finalDraft));
       setSummarySource("template");
+      setSummaryProof(null);
     } finally {
       setBusy(false);
     }
   }
 
   async function submitLead() {
-    if (!summary || !summarySource) return;
+    if (!summary || !summarySource || busy) return;
+    setBusy(true);
     try {
       const lead = buildLeadFromDraft(draft, summary, summarySource);
-      saveLead(lead);
-      // Server-seitig Benachrichtigungen auslösen (Email/Slack/Teams/Webhook).
-      // Bewusst NICHT blockierend für die User-Experience — Mandant darf nicht
-      // hängen, wenn ein Slack-Webhook der Kanzlei mal Schluckauf hat.
-      void fetch("/api/leads", {
+      // Demo-Modus (ohne Supabase): Lead lokal speichern, damit das Demo-Dashboard
+      // ihn zeigt. Mit Supabase landen personenbezogene Daten NICHT im Browser des
+      // Besuchers — der Server persistiert sie über /api/leads.
+      if (!isSupabaseConfigured()) saveLead(lead);
+      // Server validiert, erzeugt id/Status/Historie neu, speichert und benachrichtigt.
+      // Wir warten auf die Antwort: schlägt das Speichern fehl, darf der Mandant
+      // NICHT die Danke-Seite sehen (sonst ginge die Anfrage unbemerkt verloren).
+      const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lead }),
+        body: JSON.stringify({ lead, consentGiven: draft.consentGiven, summaryProof }),
       }).catch((err) => {
-        // Lead ist trotzdem im Dashboard sichtbar; Notification ist nur „nice to have".
-        console.warn("[mandorino] notification dispatch failed", err);
+        console.warn("[mandorino] /api/leads nicht erreichbar", err);
+        return null;
       });
-      router.push(successPath(lead.id));
+
+      // Demo-Modus ohne Server-Persistenz: Lead liegt lokal, Netzwerkfehler sind unkritisch.
+      const demoOffline = res === null && !isSupabaseConfigured();
+      if (!demoOffline && (!res || !res.ok)) {
+        const data = res ? ((await res.json().catch(() => null)) as { error?: string } | null) : null;
+        setError(
+          data?.error ??
+            "Ihre Anfrage konnte nicht gesendet werden. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        );
+        return;
+      }
+      const saved = res && res.ok ? ((await res.json().catch(() => null)) as { id?: string } | null) : null;
+      router.push(successPath(saved?.id ?? lead.id));
     } catch (e) {
       setError(
         e instanceof Error
           ? e.message
           : "Ihre Angaben sind unvollständig — bitte gehen Sie einen Schritt zurück.",
       );
+    } finally {
+      // Nach erfolgreicher Weiterleitung ist die Seite ohnehin weg; bei Fehlern wieder freigeben.
+      setBusy(false);
     }
   }
 
@@ -387,25 +422,25 @@ export function ChatContainer({
       </div>
 
       {stepId !== "done" && (
-        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={handleUndo}
             disabled={history.length === 0 || stepId === "summary"}
-            className="text-xs text-muted hover:text-ink-dark underline disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-dark transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
             title={
               stepId === "summary"
                 ? 'In der Zusammenfassung können Sie unten „Zusammenfassung neu erstellen" oder hier „Chat verlassen" wählen.'
                 : "Setzt nur den letzten Schritt zurück"
             }
           >
-            ← Letzte Antwort ändern
+            <span aria-hidden>←</span> Letzte Antwort ändern
           </button>
           {stepId !== "summary" && (
             <button
               type="button"
               onClick={handleAdviceQuestion}
-              className="text-xs text-muted hover:text-ink-dark underline"
+              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-dark transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)]"
             >
               Ich brauche eine rechtliche Einschätzung — was ist hier möglich?
             </button>
@@ -413,7 +448,7 @@ export function ChatContainer({
           <button
             type="button"
             onClick={handleLeave}
-            className="text-xs text-muted hover:text-red-700 underline ml-auto"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
           >
             Chat verlassen
           </button>
@@ -648,7 +683,16 @@ export function ChatContainer({
               Ich willige ein, dass die Kanzlei meine Angaben zur Bearbeitung meiner Anfrage
               verarbeitet. Mir ist bekannt, dass dieser Chat keine Rechtsberatung ist und die
               rechtliche Bewertung im persönlichen Gespräch erfolgt. Ich kann meine Einwilligung
-              jederzeit widerrufen.
+              jederzeit widerrufen. Informationen zur Datenverarbeitung finden Sie in der{" "}
+              <a
+                href={TENANT.legal.datenschutzUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Datenschutzerklärung
+              </a>
+              .
             </span>
           </label>
           <button
@@ -677,8 +721,8 @@ export function ChatContainer({
                 ohne rechtliche Bewertung
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
-                <button type="button" className="btn-primary" onClick={submitLead}>
-                  An die Kanzlei übermitteln
+                <button type="button" className="btn-primary" onClick={submitLead} disabled={busy}>
+                  {busy ? "Wird gesendet …" : "An die Kanzlei übermitteln"}
                 </button>
                 <button
                   type="button"

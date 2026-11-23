@@ -10,7 +10,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PriorityPill, StatusPill } from "@/components/StatusPill";
 import { getCurrentUser, listTeam, logout, verifySession, type SessionUser } from "@/lib/authStore";
-import { getAllLeads, seedDemoLeadsIfEmpty } from "@/lib/leadStore";
+import { listLeads } from "@/lib/clientLeads";
 import { downloadAllLeadsCsv } from "@/lib/exportLead";
 import { TENANT } from "@/lib/tenant.config";
 import { getActivePracticeAreaIds } from "@/lib/tenantOverrides";
@@ -24,6 +24,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<SessionUser | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("offen");
   const [areaFilter, setAreaFilter] = useState<string>("alle");
@@ -38,13 +40,24 @@ export default function DashboardPage() {
       return;
     }
     setUser(cur);
-    seedDemoLeadsIfEmpty();
-    setLeads(getAllLeads());
+    loadLeads();
     // Asynchrone Bestätigung der Session bei Supabase im Hintergrund
     void verifySession().then((u) => {
       if (!u) router.replace("/team/login");
     });
   }, [router]);
+
+  function loadLeads() {
+    setLoading(true);
+    setLoadError(false);
+    listLeads()
+      .then(setLeads)
+      .catch((e) => {
+        console.error("[dashboard] Leads konnten nicht geladen werden", e);
+        setLoadError(true);
+      })
+      .finally(() => setLoading(false));
+  }
 
   const team = useMemo(() => listTeam(), []);
   const activeAreas = useMemo(() => listPracticeAreas(getActivePracticeAreaIds()), [user]);
@@ -228,14 +241,28 @@ export default function DashboardPage() {
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
               >
-                <option value="priority">Bearbeitungs-Priorität</option>
+                <option value="priority">Priorität</option>
                 <option value="newest">Neueste zuerst</option>
               </select>
             </FilterField>
           </div>
 
           {/* Liste */}
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="card p-12 text-center text-sm text-muted" role="status" aria-live="polite">
+              Anfragen werden geladen …
+            </div>
+          ) : loadError ? (
+            <div className="card p-12 text-center" role="alert">
+              <p className="font-serif text-xl font-semibold text-ink-dark">Anfragen konnten nicht geladen werden</p>
+              <p className="mt-1 text-sm text-muted">
+                Bitte prüfen Sie Ihre Verbindung. Falls das Problem bleibt, melden Sie sich neu an.
+              </p>
+              <button type="button" className="btn-secondary mt-5" onClick={loadLeads}>
+                Erneut versuchen
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="card p-12 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-paper text-ink">
                 <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -246,7 +273,42 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-muted">Für diese Filter-Kombination gibt es aktuell keine Leads.</p>
             </div>
           ) : (
-            <div className="card overflow-x-auto animate-fade-up delay-3">
+            <>
+            {/* Mobil: Karten statt breiter Tabelle */}
+            <ul className="space-y-3 md:hidden">
+              {filtered.map((l) => (
+                <li key={l.id} className="card p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="truncate font-medium text-ink-dark">
+                        {l.contact.firstName} {l.contact.lastName}
+                      </div>
+                      <div className="text-xs text-muted">
+                        {l.areaLabel} · PLZ {l.contact.postalCode}
+                      </div>
+                    </div>
+                    <Link
+                      href={`/team/lead/${l.id}`}
+                      className="shrink-0 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink"
+                    >
+                      Öffnen →
+                    </Link>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <StatusPill status={l.status} />
+                    <PriorityPill tier={l.priority.tier} />
+                    <InsurancePill insurance={l.insurance} />
+                  </div>
+                  <div className="mt-2 text-xs text-muted">
+                    {new Date(l.createdAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                    {" · "}
+                    {team.find((t) => t.id === l.assignedToUserId)?.name ?? "nicht zugewiesen"}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {/* Ab md: Tabelle; ab xl etwas breiter als der Textblock, damit keine Spalte abgeschnitten wird */}
+            <div className="card hidden overflow-x-auto animate-fade-up delay-3 md:block xl:-mx-24">
               <table className="w-full text-sm">
                 <thead className="bg-paper text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                   <tr>
@@ -303,10 +365,10 @@ export default function DashboardPage() {
                           <div className="text-xs text-muted">PLZ {l.contact.postalCode}</div>
                         </td>
                         <td className="px-4 py-3">{l.areaLabel}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <StatusPill status={l.status} />
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <PriorityPill tier={l.priority.tier} />
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -329,7 +391,7 @@ export default function DashboardPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-muted">{assignedName}</td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-3 text-right whitespace-nowrap">
                           <Link
                             href={`/team/lead/${l.id}`}
                             className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all group-hover:border-ink/40 group-hover:shadow-soft"
@@ -343,6 +405,7 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
       </main>

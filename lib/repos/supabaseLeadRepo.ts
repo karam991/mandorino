@@ -1,3 +1,5 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import type {
   ClaimValueBucket,
   ClientType,
@@ -85,8 +87,14 @@ function leadToRow(lead: Lead): SupabaseLeadRow {
   };
 }
 
+export function serverSupabaseUrl(): string | undefined {
+  return process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || undefined;
+}
+
 export async function createSupabaseLeadRepo(): Promise<LeadRepo> {
-  const url = process.env.SUPABASE_URL;
+  // Die Projekt-URL ist öffentlich und identisch — Fallback auf die NEXT_PUBLIC-Variante,
+  // damit nicht „Browser konfiguriert, Server stumm" entsteht.
+  const url = serverSupabaseUrl();
   // Service-Role-Key — nur server-seitig; mit aktiviertem RLS in Produktion
   // sollte der Server diesen Key benutzen, der Client niemals.
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -95,8 +103,16 @@ export async function createSupabaseLeadRepo(): Promise<LeadRepo> {
   }
 
   const { createClient } = await import("@supabase/supabase-js");
-  const sb = createClient(url, key, { auth: { persistSession: false } });
+  return buildSupabaseLeadRepo(createClient(url, key, { auth: { persistSession: false } }));
+}
 
+/**
+ * Baut das Repo auf einem beliebigen Supabase-Client auf.
+ * - Server: Service-Role-Client (umgeht RLS) → siehe `createSupabaseLeadRepo`.
+ * - Browser: Anon-Key + JWT des eingeloggten Team-Mitglieds → RLS entscheidet,
+ *   wer Leads sehen/ändern darf (siehe `lib/clientLeads.ts`).
+ */
+export function buildSupabaseLeadRepo(sb: SupabaseClient): LeadRepo {
   return {
     async list() {
       const { data, error } = await sb
@@ -114,7 +130,9 @@ export async function createSupabaseLeadRepo(): Promise<LeadRepo> {
     },
 
     async save(lead) {
-      const { error } = await sb.from("leads").upsert(leadToRow(lead), { onConflict: "id" });
+      // Bewusst insert statt upsert: eine bekannte ID darf einen bestehenden Lead
+      // nicht überschreiben (der Server nutzt die Service-Role, RLS greift dort nicht).
+      const { error } = await sb.from("leads").insert(leadToRow(lead));
       if (error) throw error;
     },
 
@@ -141,24 +159,11 @@ export async function createSupabaseLeadRepo(): Promise<LeadRepo> {
     },
 
     async appendHistory(id, entry) {
-      // Atomic Update via RPC wäre sauberer; für MVP genügt Read-Modify-Write,
-      // weil Schreibkonflikte bei <100 Leads/Tag/Kanzlei selten sind.
-      const { data: existing, error: e1 } = await sb
-        .from("leads")
-        .select("history")
-        .eq("id", id)
-        .maybeSingle();
-      if (e1) throw e1;
-      if (!existing) return null;
-      const newHistory = [...(existing.history as LeadHistoryEntry[]), entry];
-      const { data, error } = await sb
-        .from("leads")
-        .update({ history: newHistory })
-        .eq("id", id)
-        .select()
-        .maybeSingle();
+      // Atomar per SQL-Funktion (siehe supabase/schema.sql) — kein Read-Modify-Write.
+      const { data, error } = await sb.rpc("append_lead_history", { p_id: id, p_entry: entry });
       if (error) throw error;
-      return data ? rowToLead(data as SupabaseLeadRow) : null;
+      const row = data as SupabaseLeadRow | null;
+      return row && row.id ? rowToLead(row) : null;
     },
   };
 }
@@ -171,7 +176,7 @@ export async function createSupabaseLeadRepo(): Promise<LeadRepo> {
 let cached: LeadRepo | null | undefined;
 export async function getServerLeadRepo(): Promise<LeadRepo | null> {
   if (cached !== undefined) return cached;
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!serverSupabaseUrl() || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     cached = null;
     return null;
   }

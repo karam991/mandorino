@@ -10,10 +10,22 @@
 const buckets = new Map<string, { count: number; resetAt: number }>();
 const MAX_BUCKETS = 5000;
 
+/**
+ * Client-IP für das Rate-Limit.
+ * Der LINKE Eintrag von x-forwarded-for ist vom Client frei wählbar (Spoofing →
+ * Limit umgehbar). Daher: Header der Plattform bevorzugen (Vercel setzt
+ * x-vercel-forwarded-for / x-real-ip selbst), sonst den RECHTESTEN XFF-Eintrag —
+ * den hängt der nächste vertrauenswürdige Proxy an.
+ */
 export function clientIp(req: Request): string {
+  const platform = req.headers.get("x-vercel-forwarded-for") ?? req.headers.get("x-real-ip");
+  if (platform) return platform.split(",")[0].trim();
   const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0].trim();
-  return req.headers.get("x-real-ip") ?? "unknown";
+  if (fwd) {
+    const parts = fwd.split(",");
+    return parts[parts.length - 1].trim();
+  }
+  return "unknown";
 }
 
 /** true = Anfrage erlaubt, false = Limit überschritten. */

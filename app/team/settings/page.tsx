@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -79,7 +80,7 @@ export default function SettingsPage() {
     // Reihenfolge wie in TENANT.practiceAreas erhalten
     const ordered = TENANT.practiceAreas.filter((id) => active.has(id));
     if (ordered.length === 0) {
-      alert("Mindestens ein Rechtsgebiet muss aktiv bleiben.");
+      toast.error("Mindestens ein Rechtsgebiet muss aktiv bleiben.");
       return;
     }
     setStatus({ kind: "saving" });
