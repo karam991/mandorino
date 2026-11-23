@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -79,7 +80,7 @@ export default function SettingsPage() {
     // Reihenfolge wie in TENANT.practiceAreas erhalten
     const ordered = TENANT.practiceAreas.filter((id) => active.has(id));
     if (ordered.length === 0) {
-      alert("Mindestens ein Rechtsgebiet muss aktiv bleiben.");
+      toast.error("Mindestens ein Rechtsgebiet muss aktiv bleiben.");
       return;
     }
     setStatus({ kind: "saving" });
@@ -124,7 +125,7 @@ export default function SettingsPage() {
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           <div className="mb-6">
             <span className="pill bg-ink/10 text-ink-dark mb-2">Kanzlei-Einstellungen</span>

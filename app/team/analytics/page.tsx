@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarDays, CalendarRange, CircleDot, Percent, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { getCurrentUser, verifySession, type SessionUser } from "@/lib/authStore";
-import { getAllLeads, seedDemoLeadsIfEmpty } from "@/lib/leadStore";
+import { listLeads } from "@/lib/clientLeads";
 import type { Lead } from "@/lib/types";
 
 /**
@@ -29,8 +30,9 @@ export default function AnalyticsPage() {
       return;
     }
     setUser(cur);
-    seedDemoLeadsIfEmpty();
-    setLeads(getAllLeads());
+    listLeads()
+      .then(setLeads)
+      .catch((e) => console.error("[analytics] Leads konnten nicht geladen werden", e));
     void verifySession().then((u) => {
       if (!u) router.replace("/team/login");
     });
@@ -74,23 +76,23 @@ export default function AnalyticsPage() {
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           <div className="mb-6">
             <span className="pill bg-ink/10 text-ink-dark mb-2">Auswertung</span>
             <h1 className="text-2xl font-bold">Lead-Übersicht</h1>
             <p className="text-sm text-muted mt-1">
-              Schlanke Auswertung — wird nach Launch um Funnel-, Reaktionszeit- und
-              Quellen-Kennzahlen erweitert.
+              Kennzahlen zu den eingegangenen Anfragen.
             </p>
           </div>
 
           {/* Vier KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <Kpi label="Leads (7 Tage)" value={String(stats.last7)} />
-            <Kpi label="Leads (30 Tage)" value={String(stats.last30)} />
-            <Kpi label="Offen" value={String(stats.open)} />
+            <Kpi Icon={CalendarDays} label="Leads (7 Tage)" value={String(stats.last7)} />
+            <Kpi Icon={CalendarRange} label="Leads (30 Tage)" value={String(stats.last30)} />
+            <Kpi Icon={CircleDot} label="Offen" value={String(stats.open)} />
             <Kpi
+              Icon={Percent}
               label="Mandate / Entschiedene"
               value={`${stats.conversion}%`}
               hint="Mandate angenommen vs. Mandate angenommen + abgelehnt"
@@ -111,7 +113,7 @@ export default function AnalyticsPage() {
                     <div className="w-40 text-sm text-ink-dark truncate">{label}</div>
                     <div className="flex-1 bg-paper-dark h-3 rounded-full overflow-hidden">
                       <div
-                        className="brand-bg h-full"
+                        className="brand-bg h-full rounded-full transition-[width] duration-700 ease-out"
                         style={{ width: `${Math.round((count / stats.maxArea) * 100)}%` }}
                       />
                     </div>
@@ -122,23 +124,6 @@ export default function AnalyticsPage() {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* TODO-Platzhalter */}
-          <div className="card p-6 bg-paper-dark/50 border-dashed">
-            <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
-              Geplant — nach Launch
-            </h2>
-            <ul className="text-sm text-muted space-y-1">
-              <li>· Funnel: Anfrage → Kontaktiert → Mandat (Conversion-Stufen)</li>
-              <li>· Median-Reaktionszeit pro Bearbeiter:in</li>
-              <li>· Lead-Quellen (UTM, Direktzugriff, Re-Targeting)</li>
-              <li>· Verlauf über Zeit (Wochenkurve, saisonale Muster)</li>
-            </ul>
-            <p className="text-xs text-muted mt-3">
-              TODO: Diese Auswertungen brauchen Server-seitige Persistenz (kein localStorage).
-              Mit Supabase/Postgres als Backend in 1–2 Tagen umsetzbar.
-            </p>
           </div>
 
           <div className="mt-6">
@@ -153,12 +138,29 @@ export default function AnalyticsPage() {
   );
 }
 
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Kpi({
+  label,
+  value,
+  hint,
+  Icon,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  Icon: LucideIcon;
+}) {
   return (
-    <div className="card p-4">
-      <div className="text-xs uppercase tracking-wide text-muted">{label}</div>
-      <div className="text-2xl font-bold mt-1">{value}</div>
-      {hint && <div className="text-[11px] text-muted mt-1 leading-snug">{hint}</div>}
+    <div className="card relative overflow-hidden p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+      <div
+        className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[color:var(--brand-accent)] to-transparent"
+        aria-hidden="true"
+      />
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+        <Icon className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+      </div>
+      <div className="mt-2 font-serif text-4xl font-semibold tabular-nums text-ink-dark">{value}</div>
+      {hint && <div className="mt-1 text-[11px] leading-snug text-muted">{hint}</div>}
     </div>
   );
 }

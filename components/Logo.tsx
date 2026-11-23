@@ -5,13 +5,15 @@ import { TENANT } from "@/lib/tenant.config";
 interface LogoProps {
   variant?: "default" | "white";
   size?: "sm" | "md";
+  /** Tagline ausblenden (z. B. im schmalen Team-Header). */
+  hideTagline?: boolean;
 }
 
 /**
  * Tenant-Logo. Wenn `tenant.brand.logoUrl` gesetzt ist, zeigen wir das Bild;
  * sonst Text-Fallback mit Kanzleiname + Tagline.
  */
-export function Logo({ variant = "default", size = "md" }: LogoProps) {
+export function Logo({ variant = "default", size = "md", hideTagline = false }: LogoProps) {
   const big = size === "md";
   const textColor = variant === "white" ? "text-white" : "text-ink-dark";
   const subColor = variant === "white" ? "text-white/70" : "text-muted";
@@ -36,11 +38,13 @@ export function Logo({ variant = "default", size = "md" }: LogoProps) {
       >
         {TENANT.brand.kanzleiName}
       </span>
-      <span
-        className={`uppercase tracking-widest ${subColor} ${big ? "text-[10px]" : "text-[9px]"}`}
-      >
-        {TENANT.brand.tagline}
-      </span>
+      {!hideTagline && (
+        <span
+          className={`uppercase tracking-widest ${subColor} ${big ? "text-[10px]" : "text-[9px]"}`}
+        >
+          {TENANT.brand.tagline}
+        </span>
+      )}
     </Link>
   );
 }

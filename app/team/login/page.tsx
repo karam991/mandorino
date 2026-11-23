@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { Mandarin } from "@/components/Mandarin";
 import { getCurrentUser, tryLogin, verifySession } from "@/lib/authStore";
-import { isSupabaseConfigured } from "@/lib/supabaseClient";
+import { isDemoMode, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { TENANT } from "@/lib/tenant.config";
 
 /** Animierte Waage (Justitia) — dekorativ. */
@@ -34,8 +35,9 @@ export default function TeamLoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    // Cache-Check sofort, dann optional Supabase-Verify im Hintergrund.
-    if (getCurrentUser()) {
+    // Demo-Modus: Cache reicht. Supabase-Modus: nur die echte Session zählt —
+    // ein veralteter Cache würde sonst mit der Middleware in eine Redirect-Schleife laufen.
+    if (!isSupabaseConfigured() && getCurrentUser()) {
       router.replace("/team/dashboard");
       return;
     }
@@ -62,10 +64,12 @@ export default function TeamLoginPage() {
   }
 
   const supabaseMode = isSupabaseConfigured();
-  const demo = TENANT.team.find((t) => t.password); // nur falls noch Demo-Passwort gesetzt
+  // Demo-Hinweis nur im expliziten Demo-Modus (NEXT_PUBLIC_DEMO_MODE=1 + NEXT_PUBLIC_DEMO_PASSWORD).
+  const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+  const demo = isDemoMode() && demoPassword ? { email: TENANT.team[0]?.email ?? "", password: demoPassword } : null;
 
   return (
-    <main className="min-h-screen grid lg:grid-cols-[1.05fr_0.95fr] bg-paper">
+    <main id="main" className="min-h-screen grid lg:grid-cols-[1.05fr_0.95fr] bg-paper">
       {/* ---- Linke Seite: Markenwelt ---- */}
       <section className="relative isolate hidden overflow-hidden brand-bg text-white lg:flex flex-col justify-between p-12">
         <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
@@ -95,7 +99,8 @@ export default function TeamLoginPage() {
         </div>
 
         {/* Vorschau-Karte (rein dekorativ, fiktive Daten) */}
-        <div className="animate-fade-up delay-4" aria-hidden="true">
+        <div className="animate-fade-up delay-4 relative max-w-sm" aria-hidden="true">
+          <Mandarin className="pointer-events-none absolute -right-8 -top-20 z-10 h-40 w-36" />
           <div className="animate-float max-w-sm rounded-2xl border border-white/15 bg-white/[0.07] p-4 shadow-glow backdrop-blur">
             <div className="flex items-center justify-between text-xs text-white/60">
               <span>Neue Anfrage</span>

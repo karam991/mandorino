@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "./Logo";
+import { TeamNav } from "./TeamNav";
 
 interface HeaderProps {
   /** "client" = öffentliche Mandanten-Seite. "team" = internes Anwalts-Dashboard. */
@@ -15,9 +16,9 @@ export function Header({ variant = "client" }: HeaderProps) {
     <header className="brand-bg text-white sticky top-0 z-40 border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-[color:var(--brand-primary)]/90">
       <div className="mx-auto max-w-page px-4 sm:px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Logo variant="white" />
+          <Logo variant="white" hideTagline={variant === "team"} />
           {variant === "team" && (
-            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-white/15 text-white/90 border border-white/20">
+            <span className="hidden lg:inline-flex whitespace-nowrap items-center gap-1 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-white/15 text-white/90 border border-white/20">
               Mandorino · Team
             </span>
           )}
@@ -39,26 +40,7 @@ export function Header({ variant = "client" }: HeaderProps) {
               </Link>
             </>
           ) : (
-            <>
-              <Link href="/team/dashboard" className="px-3 py-2 rounded-md hover:bg-white/10">
-                Leads
-              </Link>
-              <Link href="/team/analytics" className="px-3 py-2 rounded-md hover:bg-white/10">
-                Auswertung
-              </Link>
-              <Link href="/team/embed" className="px-3 py-2 rounded-md hover:bg-white/10">
-                Einbettung
-              </Link>
-              <Link href="/team/settings" className="px-3 py-2 rounded-md hover:bg-white/10">
-                Einstellungen
-              </Link>
-              <Link
-                href="/"
-                className="ml-1 px-3 py-2 rounded-md border border-white/30 hover:bg-white/10"
-              >
-                Mandanten-Ansicht
-              </Link>
-            </>
+            <TeamNav />
           )}
         </nav>
       </div>

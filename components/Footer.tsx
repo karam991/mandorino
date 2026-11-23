@@ -17,7 +17,7 @@ export function Footer() {
           <a href={TENANT.legal.datenschutzUrl} className="transition-colors hover:text-white">
             Datenschutz
           </a>
-          <span className="hidden text-xs text-white/50 sm:inline">
+          <span className="hidden text-xs text-white/70 sm:inline">
             Vorab-Erfassung mit <span className="font-medium text-white/80">Mandorino</span>
           </span>
         </div>

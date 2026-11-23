@@ -1,18 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PriorityPill, StatusPill } from "@/components/StatusPill";
-import {
-  addNote,
-  assignLead,
-  changeStatus,
-  getLeadById,
-} from "@/lib/leadStore";
+import { addNote, assignLead, changeStatus, getLead } from "@/lib/clientLeads";
 import { downloadLeadCsv, downloadLeadJson } from "@/lib/exportLead";
 import { getCurrentUser, listTeam, verifySession, type SessionUser } from "@/lib/authStore";
 import {
@@ -40,9 +36,13 @@ export default function LeadDetailPage() {
     }
     setUser(cur);
     if (typeof leadId === "string") {
-      setLead(getLeadById(leadId));
+      getLead(leadId)
+        .then(setLead)
+        .catch((e) => console.error("[lead] Lead konnte nicht geladen werden", e))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
     void verifySession().then((u) => {
       if (!u) router.replace("/team/login");
     });
@@ -56,7 +56,7 @@ export default function LeadDetailPage() {
     return (
       <>
         <Header variant="team" />
-        <main className="flex-1 bg-paper">
+        <main id="main" className="flex-1 bg-paper">
           <section className="mx-auto max-w-2xl px-4 sm:px-6 py-16 text-center">
             <h1 className="text-2xl font-bold mb-3">Lead nicht gefunden</h1>
             <Link href="/team/dashboard" className="btn-primary">
@@ -71,33 +71,52 @@ export default function LeadDetailPage() {
 
   const actor = { userId: user.id, userName: user.name };
 
-  function onStatusChange(s: LeadStatus) {
+  async function onStatusChange(s: LeadStatus) {
     if (!lead) return;
-    const updated = changeStatus(lead.id, s, actor);
-    if (updated) setLead(updated);
+    try {
+      const updated = await changeStatus(lead.id, s, actor);
+      if (updated) {
+        setLead(updated);
+        toast.success("Status aktualisiert");
+      }
+    } catch (e) {
+      console.error("[lead] Statuswechsel fehlgeschlagen", e);
+      toast.error("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.");
+    }
   }
 
-  function onAssign(value: string) {
+  async function onAssign(value: string) {
     if (!lead) return;
     const assigneeId = value === "" ? null : value;
     const name = assigneeId ? team.find((t) => t.id === assigneeId)?.name ?? null : null;
-    const updated = assignLead(lead.id, assigneeId, name, actor);
-    if (updated) setLead(updated);
+    try {
+      const updated = await assignLead(lead.id, assigneeId, name, actor);
+      if (updated) setLead(updated);
+    } catch (e) {
+      console.error("[lead] Zuweisung fehlgeschlagen", e);
+      toast.error("Die Zuweisung konnte nicht gespeichert werden. Bitte erneut versuchen.");
+    }
   }
 
-  function onAddNote() {
+  async function onAddNote() {
     if (!lead || !noteDraft.trim()) return;
-    const updated = addNote(lead.id, noteDraft, actor);
-    if (updated) {
-      setLead(updated);
-      setNoteDraft("");
+    try {
+      const updated = await addNote(lead.id, noteDraft, actor);
+      if (updated) {
+        setLead(updated);
+        setNoteDraft("");
+        toast.success("Notiz gespeichert");
+      }
+    } catch (e) {
+      console.error("[lead] Notiz fehlgeschlagen", e);
+      toast.error("Die Notiz konnte nicht gespeichert werden. Bitte erneut versuchen.");
     }
   }
 
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <Link
@@ -334,6 +353,7 @@ export default function LeadDetailPage() {
                 </h2>
                 <select
                   className="input"
+                  aria-label="Bearbeiter:in zuweisen"
                   value={lead.assignedToUserId ?? ""}
                   onChange={(e) => onAssign(e.target.value)}
                 >

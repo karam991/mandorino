@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { DEFAULT_SUMMARY_MODEL } from "@/lib/constants";
 import { PayloadTooLargeError, rateLimit, readJsonLimited } from "@/lib/server/guard";
+import { signSummary } from "@/lib/server/summarySignature";
 import { buildTemplateSummary } from "@/lib/templateSummary";
 import type { LeadDraft } from "@/lib/types";
 
@@ -46,6 +47,14 @@ interface SummarizeResponse {
   summary: string;
   /** "claude" ist ein historischer Bezeichner für „KI-Zusammenfassung" (Provider: Mistral) — er steckt im DB-Check-Constraint und bleibt aus Kompatibilitätsgründen. */
   source: "claude" | "template";
+  /** HMAC-Beleg, damit /api/leads die Zusammenfassung als „vom Server erzeugt" erkennt. */
+  proof?: { ts: number; sig: string };
+}
+
+/** Antwort mit Signatur (sofern MANDORINO_SIGNING_SECRET gesetzt ist). */
+function reply(summary: string, source: "claude" | "template") {
+  const proof = signSummary(summary, source);
+  return NextResponse.json<SummarizeResponse>({ summary, source, ...(proof ? { proof } : {}) });
 }
 
 export async function POST(req: Request) {
@@ -75,10 +84,7 @@ export async function POST(req: Request) {
   const apiKey = process.env.MISTRAL_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json<SummarizeResponse>({
-      summary: buildTemplateSummary(draft),
-      source: "template",
-    });
+    return reply(buildTemplateSummary(draft), "template");
   }
 
   try {
@@ -103,10 +109,7 @@ export async function POST(req: Request) {
 
     if (!res.ok) {
       console.error("Mistral-Aufruf fehlgeschlagen:", res.status, await res.text());
-      return NextResponse.json<SummarizeResponse>({
-        summary: buildTemplateSummary(draft),
-        source: "template",
-      });
+      return reply(buildTemplateSummary(draft), "template");
     }
 
     const data = (await res.json()) as {
@@ -115,19 +118,13 @@ export async function POST(req: Request) {
     const text = data.choices?.[0]?.message?.content?.trim() ?? "";
 
     if (!text) {
-      return NextResponse.json<SummarizeResponse>({
-        summary: buildTemplateSummary(draft),
-        source: "template",
-      });
+      return reply(buildTemplateSummary(draft), "template");
     }
 
-    return NextResponse.json<SummarizeResponse>({ summary: text, source: "claude" });
+    return reply(text, "claude");
   } catch (err) {
     console.error("Mistral-Aufruf fehlgeschlagen, nutze Template:", err);
-    return NextResponse.json<SummarizeResponse>({
-      summary: buildTemplateSummary(draft),
-      source: "template",
-    });
+    return reply(buildTemplateSummary(draft), "template");
   }
 }
 

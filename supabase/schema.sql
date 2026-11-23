@@ -68,6 +68,9 @@ create table if not exists public.leads (
   area_id text not null,
   area_label text not null,
 
+  -- Privatperson oder Unternehmen (vom Server-Repo geschrieben)
+  client_type text not null default 'private' check (client_type in ('private', 'business')),
+
   -- Generische Mandantenangaben — Schema-frei, jedes Area-Modul kennt seine Keys
   area_data jsonb not null default '{}'::jsonb,
 
@@ -100,6 +103,11 @@ create table if not exists public.leads (
   -- Bearbeitungs-Priorität (Sortier-Hilfe — KEIN Erfolgs-Rating)
   priority jsonb not null default '{"tier":"medium","numeric":50,"signals":[]}'::jsonb
 );
+
+-- Migration für bestehende Instanzen (Tabelle wurde ohne client_type angelegt):
+alter table public.leads
+  add column if not exists client_type text not null default 'private'
+  check (client_type in ('private', 'business'));
 
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 create index if not exists leads_status_idx on public.leads (status);
@@ -157,6 +165,20 @@ create policy "team kann sich selbst sehen"
   for select
   to authenticated
   using ( public.is_team_member() );
+
+-- Atomares Anhängen an die Historie (kein Read-Modify-Write im Client → keine
+-- verlorenen Notizen, wenn zwei Personen gleichzeitig schreiben).
+-- security invoker: RLS der aufrufenden Person gilt weiterhin.
+create or replace function public.append_lead_history(p_id text, p_entry jsonb)
+returns public.leads
+language sql
+security invoker
+as $$
+  update public.leads
+     set history = history || jsonb_build_array(p_entry)
+   where id = p_id
+  returning *;
+$$;
 
 -- ============================================================================
 -- 4. tenant_settings — Runtime-Config-Overrides (z.B. aktive Rechtsgebiete)

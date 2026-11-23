@@ -22,3 +22,7 @@ yarn-error.log*
 .vscode/
 .idea/
 *.swp
+
+# Build-/Tool-Artefakte
+*.tsbuildinfo
+.claude/settings.local.json

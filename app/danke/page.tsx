@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Mandarin } from "@/components/Mandarin";
 import { TENANT } from "@/lib/tenant.config";
 
 export default function DankePage() {
@@ -19,7 +20,7 @@ export default function DankePage() {
       <Header variant="client" />
       <DisclaimerBanner />
 
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <section className="mx-auto max-w-2xl px-4 py-14 sm:px-6 sm:py-20">
           <div className="card relative overflow-hidden p-8 text-center sm:p-10">
             <div
@@ -27,11 +28,22 @@ export default function DankePage() {
               style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
               aria-hidden="true"
             />
-            <div className="check-pop relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full brand-bg shadow-lift ring-4 ring-[color:var(--brand-accent)]/40">
-              <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path className="check-draw" d="m5 12.5 4.5 4.5L19 7.5" />
-              </svg>
-            </div>
+            {TENANT.brand.mascot !== false ? (
+              <div className="relative mx-auto mb-4 h-36 w-32">
+                <Mandarin className="h-full w-full" interactive={false} />
+                <span className="check-pop absolute bottom-4 right-0 flex h-11 w-11 items-center justify-center rounded-full brand-bg shadow-lift ring-4 ring-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path className="check-draw" d="m5 12.5 4.5 4.5L19 7.5" />
+                  </svg>
+                </span>
+              </div>
+            ) : (
+              <div className="check-pop relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full brand-bg shadow-lift ring-4 ring-[color:var(--brand-accent)]/40">
+                <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path className="check-draw" d="m5 12.5 4.5 4.5L19 7.5" />
+                </svg>
+              </div>
+            )}
             <h1 className="animate-fade-up delay-1 relative text-3xl font-semibold sm:text-4xl">
               Vielen Dank — Ihre Anfrage ist bei uns eingegangen.
             </h1>

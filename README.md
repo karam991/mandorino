@@ -22,14 +22,16 @@ Zuweisung, Notizen und Bearbeitungs-Priorität.
 - **KI-Zusammenfassung:** **Mistral** (EU-Anbieter) über die REST-API, Standardmodell
   `mistral-small-latest` (per `MISTRAL_MODEL` änderbar). Ohne `MISTRAL_API_KEY`
   oder bei einem Fehler läuft der **Template-Fallback** — der Chat funktioniert immer.
-- **Persistenz:** `localStorage` (MVP-Modus) oder **Supabase/Postgres** mit RLS
-  (Produktiv-Modus) — automatisch umgeschaltet, siehe unten.
-- **Auth:** Supabase Auth (Produktiv) bzw. Demo-Login aus der Tenant-Config (MVP).
+- **Persistenz:** **Supabase/Postgres** mit RLS (Produktiv) oder `localStorage`
+  (Demo-Modus, nur mit Fake-Daten) — siehe „Persistenz + Auth".
+- **Auth:** Supabase Auth mit Cookie-Session (`@supabase/ssr`); `middleware.ts`
+  schützt `/team/*` serverseitig. Demo-Modus nur per explizitem Flag.
+- **Tests:** Vitest (`npm test`) für Lead-Validierung, Signatur, Rate-Limit, Scoring.
 - **E-Mail:** `nodemailer` (SMTP) als optionale Abhängigkeit; Slack / Teams / Webhook
   per HTTP.
 - **Hosting:** Vercel.
 
-`@supabase/supabase-js` und `nodemailer` sind als `optionalDependencies`
+`@supabase/supabase-js`, `@supabase/ssr` und `nodemailer` sind als `optionalDependencies`
 eingetragen und werden per dynamischem Import geladen — fehlen sie, läuft das
 System ohne Supabase bzw. SMTP weiter.
 
@@ -37,12 +39,16 @@ System ohne Supabase bzw. SMTP weiter.
 
 ```bash
 npm install
-cp .env.local.example .env.local   # optional — alle Variablen sind optional
+cp .env.local.example .env.local   # alle Variablen sind optional
 npm run dev
+npm test                           # Unit-Tests (Vitest)
+npm run typecheck
 ```
 
-App unter http://localhost:3000. Ohne Umgebungsvariablen läuft alles lokal:
-Template-Zusammenfassung, `localStorage`, Demo-Login.
+App unter http://localhost:3000. Ohne Umgebungsvariablen laufen Chat und Landing
+lokal (Template-Zusammenfassung). Das **Team-Login ist dann gesperrt** — für lokale
+Demos `NEXT_PUBLIC_DEMO_MODE=1` und `NEXT_PUBLIC_DEMO_PASSWORD=<passwort>` setzen
+(siehe „Persistenz + Auth").
 
 Wichtige Variablen (Details in `.env.local.example`):
 
@@ -50,7 +56,10 @@ Wichtige Variablen (Details in `.env.local.example`):
 |---|---|
 | `MISTRAL_API_KEY` / `MISTRAL_MODEL` | KI-Zusammenfassung (sonst Template-Fallback) |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Server: Leads in die DB schreiben (**nie im Client**) |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser: Supabase Auth fürs Team-Login |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser + Middleware: Supabase Auth fürs Team-Login |
+| `MANDORINO_SIGNING_SECRET` | Signiert die KI-Zusammenfassung; ohne Secret wird sie serverseitig durch die Template-Variante ersetzt (**in Produktion setzen**) |
+| `EMBED_ALLOWED_ORIGINS` | Komma-getrennte Kanzlei-Origins, die `/embed` und `/chat` einbetten dürfen; ungesetzt = jede Seite (**in Produktion setzen**) |
+| `NEXT_PUBLIC_DEMO_MODE`, `NEXT_PUBLIC_DEMO_PASSWORD` | Demo-Modus ohne Supabase (nur Fake-Daten, Passwort ist öffentlich) |
 | `SMTP_*` | E-Mail-Benachrichtigung |
 | `SLACK_WEBHOOK_URL`, `TEAMS_WEBHOOK_URL`, `GENERIC_WEBHOOK_URL` | weitere Channels |
 | `MANDORINO_PUBLIC_URL` | öffentliche URL (Links in Benachrichtigungen, Link-Vorschau) |
@@ -62,9 +71,9 @@ Alles, was pro Kanzlei anders ist, lebt in `lib/tenant.config.ts`:
 ```ts
 TENANT = {
   brand: { kanzleiName, tagline, logoUrl, primary, accent },
-  legal: { impressumUrl, datenschutzUrl, rueckmeldungInnerhalb },
+  legal: { impressumUrl, datenschutzUrl, rueckmeldungInnerhalb, provider: { name, street, ... } },
   practiceAreas: [ "arbeitsrecht", "verkehrsrecht", ... ],
-  team: [ { id, name, email, password?, role } ],
+  team: [ { id, name, email, role } ],  // Anzeige/Zuweisung — Zugriff regelt die DB-Tabelle tenant_team
   showStreitwertRangeForClient: false,  // Compliance-Toggle
   notifications: [ ... ],
 }
@@ -77,10 +86,15 @@ TENANT = {
 - **Aktive Rechtsgebiete** werden auf der Landing automatisch als Karten
   gerendert und stehen im Chat als Themen-Auswahl zur Verfügung. Das Team kann
   sie unter `/team/settings` umschalten.
-- **Team:** mehrere Accounts mit Rolle (`admin` / `bearbeiter`). `team` ist immer
-  die **Whitelist** (nur diese E-Mails kommen ins Dashboard). Das Feld `password`
-  wird **nur im MVP-Modus** (ohne Supabase) ausgewertet — vor dem Produktivbetrieb
-  aus dem Code entfernen.
+- **Team:** mehrere Accounts mit Rolle (`admin` / `bearbeiter`). `TENANT.team` liefert
+  Anzeigenamen und IDs für das Zuweisungs-Dropdown. **Wer ins Dashboard darf, entscheidet
+  ausschließlich die DB-Tabelle `tenant_team`** (Middleware + RLS). Passwörter stehen
+  nicht im Code.
+- **Impressum/Datenschutz:** `/impressum` und `/datenschutz` werden aus `legal.provider`
+  erzeugt. Solange dort „[…]"-Platzhalter stehen, zeigen die Seiten einen sichtbaren
+  „Entwurf"-Hinweis. Die Datenschutzerklärung nennt Dienstleister (Mistral, Supabase,
+  SMTP) nur, wenn sie per Umgebungsvariable aktiv sind. **Der Text ist ein Entwurf und
+  muss anwaltlich geprüft werden.**
 
 ## Rechtsgebiete
 
@@ -138,7 +152,8 @@ Vier Ebenen halten das Tool von einer Rechtsdienstleistung fern:
 > Streitwert-Range beim Mandanten (`showStreitwertRangeForClient`) ist per
 > Default deaktiviert. Vor Aktivierung muss eine Anwältin/ein Anwalt die
 > Formulierung freigeben. Ebenso offen: Datenschutz-Review (AVV, Hosting-Region,
-> Datenschutzerklärung) — dieses Repo ist ein Demo/MVP, keine geprüfte Lösung.
+> Prüfung des Entwurfs der Datenschutzerklärung und des Einwilligungstexts im Chat) —
+> dieses Repo ist ein Demo/MVP, keine geprüfte Lösung.
 
 ## Demo-Zugänge
 
@@ -148,14 +163,12 @@ Vier Ebenen halten das Tool von einer Rechtsdienstleistung fern:
 
 ### Team-Bereich
 - `/team/login`
-- **MVP-Modus (ohne Supabase):** Login mit den Team-Einträgen aus
-  `lib/tenant.config.ts` (E-Mail + dort hinterlegtes Passwort).
-  Demo-Einträge: `t.hartmann@hartmann-kollegen.de` (admin),
-  `s.bauer@hartmann-kollegen.de` (bearbeiter).
-- **Produktiv (mit Supabase):** Login nur über Supabase Auth. Die E-Mail muss
-  **zusätzlich** in `TENANT.team` stehen, als Benutzer unter
-  *Authentication → Users* existieren **und** in der Tabelle `tenant_team` stehen. `admin@hartmann-kollegen.de` steht in der
-  Whitelist, ohne Passwort im Code.
+- **Demo-Modus (ohne Supabase):** nur mit `NEXT_PUBLIC_DEMO_MODE=1`. Alle Einträge aus
+  `TENANT.team` (z. B. `t.hartmann@hartmann-kollegen.de`) melden sich mit dem gemeinsamen
+  `NEXT_PUBLIC_DEMO_PASSWORD` an. Ohne Flag ist `/team/*` gesperrt.
+- **Produktiv (mit Supabase):** Login über Supabase Auth. Die E-Mail muss unter
+  *Authentication → Users* existieren **und** in der Tabelle `tenant_team` stehen —
+  sonst leitet die Middleware auf den Login zurück.
 - `/team/dashboard` → Lead-Liste mit Filter, Sortierung, Status, CSV-Export
 - `/team/lead/[id]` → Detail mit Status-Wechsel, Zuweisung, Notizen, Historie
 - `/team/lead/[id]/auskunft` → Druckansicht für DSGVO-Auskunftsersuchen (Art. 15)
@@ -163,7 +176,7 @@ Vier Ebenen halten das Tool von einer Rechtsdienstleistung fern:
 - `/team/settings` → aktive Rechtsgebiete verwalten
 - `/team/embed` → Copy-Paste-Snippets für die Kanzlei-Website
 
-Im MVP-Modus werden beim ersten Aufruf 5 Demo-Leads ins `localStorage` geschrieben.
+Im Demo-Modus werden beim ersten Aufruf 5 Demo-Leads ins `localStorage` geschrieben.
 
 > **Hinweis Supabase Free-Tier:** Projekte werden nach einiger Inaktivität
 > pausiert. Solange ein Projekt pausiert ist, schlägt das Team-Login fehl.
@@ -172,16 +185,27 @@ Im MVP-Modus werden beim ersten Aufruf 5 Demo-Leads ins `localStorage` geschrieb
 ## API-Schutz
 
 Die öffentlichen Routen `/api/leads` und `/api/summarize` sind anonym erreichbar
-(Mandanten sind nicht eingeloggt) und deshalb abgesichert (`lib/server/guard.ts`):
+(Mandanten sind nicht eingeloggt) und deshalb abgesichert (`lib/server/`):
 
-- **Rate-Limit pro IP** (Leads: 8 / 10 Min., Summarize: 20 / 10 Min.) → HTTP 429.
-  *Ehrlich:* Das Limit liegt im Speicher der Serverless-Instanz — „best effort".
-  Für echte Last gegen einen verteilten Limiter (z. B. Redis) tauschen.
+- **Server baut den Lead selbst** (`leadInput.ts`): Der Client liefert nur
+  Mandantenangaben (Rechtsgebiet, Kontakt, Dringlichkeit, …), jeweils mit Typ- und
+  Längenprüfung. `id`, Zeitstempel, Status, Historie, Priorität und Rechtsgebiet-Label
+  erzeugt der Server — gefälschte Client-Werte werden ignoriert. Einwilligung ist Pflicht.
+- **Insert statt Upsert:** Eine bekannte ID kann keinen bestehenden Lead überschreiben.
+- **KI-Zusammenfassung ist signiert** (`summarySignature.ts`): `/api/summarize` signiert
+  die Antwort (HMAC, 2 h gültig); `/api/leads` übernimmt Client-Texte nur mit gültiger
+  Signatur, sonst baut der Server die Template-Zusammenfassung.
+- **Rate-Limit** pro IP (Leads: 8 / 10 Min., Summarize: 20 / 10 Min.) und pro
+  Mandanten-E-Mail (3 / Std.) → HTTP 429. Die IP kommt aus dem Plattform-Header
+  (`x-vercel-forwarded-for` / `x-real-ip`), sonst aus dem rechtesten `x-forwarded-for`-Eintrag.
 - **Größenlimit** 64 KB pro Request → HTTP 413.
-- **Lead-Validierung** (ID, E-Mail-Format, Längen) → HTTP 400.
+- **Keine stille Datenverlust-Antwort:** Ist Supabase konfiguriert, das Speichern
+  fehlgeschlagen und kein Benachrichtigungs-Channel hat zugestellt, antwortet die Route
+  mit 500 — der Chat zeigt dann einen Fehler statt der Danke-Seite.
 - **Generische Fehlermeldungen** — Details nur im Server-Log.
 - **Security-Header** auf allen Routen; `/team/*` ist nicht einbettbar
-  (`frame-ancestors 'self'`), `/chat` und `/embed` bleiben für Kanzlei-Websites einbettbar.
+  (`frame-ancestors 'self'`). `/chat` und `/embed` (inkl. `/embed/danke`) sind nur für
+  die Domains aus `EMBED_ALLOWED_ORIGINS` einbettbar (ungesetzt: jede Seite).
 
 ## Projekt-Struktur
 
@@ -195,6 +219,8 @@ app/
 │  ├─ page.tsx                       # Chatbot + postMessage-Resize
 │  └─ danke/page.tsx                 # Bestätigung im Embed
 ├─ danke/page.tsx                    # Bestätigung (Vollseite)
+├─ impressum/page.tsx                # Impressum (aus legal.provider, Entwurf-Hinweis)
+├─ datenschutz/page.tsx              # Datenschutzerklärung (Entwurf, aktive Dienstleister)
 ├─ not-found.tsx / error.tsx         # 404- und Fehlerseite
 ├─ icon.svg / opengraph-image.tsx    # Favicon + Link-Vorschau (aus der Tenant-Config)
 ├─ team/
@@ -209,11 +235,15 @@ app/
    ├─ summarize/route.ts             # Mistral-API + Template-Fallback
    └─ leads/route.ts                 # Lead-POST → Notifications + (opt.) Supabase
 
+middleware.ts                        # Serverseitiger Schutz von /team/* (Session + tenant_team)
+tests/                               # Vitest: leadInput, guard, priority
+vitest.config.ts
+
 public/
 └─ widget.js                         # Drop-in-Script (Floating-Button + Overlay)
 
-components/                          # Header, Footer, DisclaimerBanner, Logo, Reveal,
-                                     # ChatBubble, ChatContainer, QuickReplyChips,
+components/                          # Header, Footer, LegalPage, DisclaimerBanner, Logo,
+                                     # Reveal, ChatBubble, ChatContainer, QuickReplyChips,
                                      # StatusPill
 
 lib/
@@ -221,14 +251,17 @@ lib/
 ├─ tenantOverrides.ts                # Zur Laufzeit änderbar: aktive Rechtsgebiete
 ├─ types.ts                          # Lead, LeadDraft, LeadStatus, Historie
 ├─ chatFlow.ts                       # Globale Steps + Area-Auflösung
-├─ leadStore.ts                      # Client-CRUD (localStorage) + Demo-Seed
-├─ authStore.ts                      # Login (Supabase Auth oder MVP) + Whitelist
-├─ supabaseClient.ts                 # Browser-Supabase-Client (lazy)
+├─ leadStore.ts                      # localStorage-CRUD + Demo-Seed (nur Demo-Modus)
+├─ clientLeads.ts                    # Async Lead-Zugriff fürs Dashboard (Supabase/RLS oder Demo)
+├─ authStore.ts                      # Login (Supabase Auth oder Demo-Modus), Whitelist = tenant_team
+├─ supabaseClient.ts                 # Browser-Supabase-Client (Cookie-Session, lazy) + isDemoMode
 ├─ exportLead.ts                     # CSV-Export
 ├─ templateSummary.ts                # Generische Fallback-Zusammenfassung
 ├─ disclaimer.ts                     # White-Label-Disclaimer-Texte
 ├─ constants.ts                      # Standard-Modell der KI-Zusammenfassung
 ├─ server/guard.ts                   # Rate-Limit + Größenlimit für API-Routen
+├─ server/leadInput.ts               # Validierung + serverseitiger Lead-Aufbau
+├─ server/summarySignature.ts        # HMAC-Signatur der KI-Zusammenfassung
 ├─ areas/                            # Practice-Area-Plugins
 │  ├─ types.ts / _helpers.ts / registry.ts
 │  └─ arbeitsrecht.ts / verkehrsrecht.ts / digitales.ts / mietrecht.ts / erbrecht.ts
@@ -315,14 +348,13 @@ Email-Transport vorgesehen — kommt nach Launch.
 Channel-Fehler sind nicht-blockierend: ein kaputter Slack-Webhook verhindert
 nicht, dass der Lead im Dashboard erscheint.
 
-## Persistenz + Auth — localStorage (MVP) ↔ Supabase (Produktiv)
-
-Zwei Modi, automatisch umgeschaltet:
+## Persistenz + Auth — Supabase (Produktiv) ↔ Demo-Modus
 
 | Modus | Aktivierung | Persistenz | Auth |
 |---|---|---|---|
-| **MVP** (Dev/Demo) | keine Supabase-Env-Vars | `localStorage` im Browser | Klartext-Passwort aus `tenant.config.ts`, Session in `localStorage` |
-| **Produktiv** | `SUPABASE_*` + `NEXT_PUBLIC_SUPABASE_*` gesetzt | Supabase-DB mit RLS | Supabase Auth (gehashte Passwörter, JWT, Auto-Refresh) |
+| **Produktiv** | `SUPABASE_*` + `NEXT_PUBLIC_SUPABASE_*` gesetzt | Supabase-DB mit RLS; Dashboard liest/schreibt mit dem JWT der eingeloggten Person | Supabase Auth, Cookie-Session, `middleware.ts` + Tabelle `tenant_team` |
+| **Demo** | `NEXT_PUBLIC_DEMO_MODE=1`, **kein** Supabase | `localStorage` im Browser (Fake-Daten) | gemeinsames `NEXT_PUBLIC_DEMO_PASSWORD` (öffentlich!) |
+| *(nichts gesetzt)* | — | — | `/team/*` gesperrt (fail closed) |
 
 ### Setup
 
@@ -343,24 +375,26 @@ Zwei Modi, automatisch umgeschaltet:
 #      insert into public.tenant_team (email, name, role) values
 #        ('admin@hartmann-kollegen.de', 'Admin', 'admin')
 #      on conflict (email) do nothing;
-# 7. Dieselben E-Mail/Name/Rolle in tenant.config.ts → TENANT.team eintragen
-#    und das Feld `password` weglassen. Im Supabase-Modus wird es zwar nicht
-#    ausgewertet, würde aber Klartext-Passwörter im Repo hinterlassen.
+# 7. Optional: dieselbe Person in tenant.config.ts → TENANT.team eintragen
+#    (nur für Anzeigename/ID im Zuweisungs-Dropdown; Zugriff regelt tenant_team).
+#    Keine Passwörter in den Code schreiben.
+# 8. MANDORINO_SIGNING_SECRET und EMBED_ALLOWED_ORIGINS setzen (siehe Tabelle oben).
 ```
 
 ### Sicherheitsmodell
 
-- **Mandanten-Eingang** (`/chat`, `/embed`): anonym, schreibt via
-  `/api/leads` mit der Service-Role in `leads`. Direkter Anon-INSERT in die
-  Tabelle ist per RLS nicht erlaubt (es gibt keine INSERT-Policy für Anon).
-  Die Route selbst ist durch Rate-Limit, Größenlimit und Validierung geschützt
-  (siehe „API-Schutz").
-- **Team-Dashboard**: nutzt Browser-Anon-Key + Supabase-JWT. Zugriff hat nur, wer
-  **an zwei Stellen** steht (bewusste Doppel-Pflege): in `TENANT.team` (App-Whitelist)
-  **und** in der DB-Tabelle `tenant_team` (RLS-Policy `is_team_member()`).
-  Wer nur in Supabase Auth existiert, kommt nicht ins Dashboard (App) bzw. sieht keine
-  Leads (RLS) und wird beim nächsten `verifySession()` ausgeloggt, falls er nicht in
-  `TENANT.team` steht.
+- **Mandanten-Eingang** (`/chat`, `/embed`): anonym, schreibt via `/api/leads` mit der
+  Service-Role in `leads`. Direkter Anon-INSERT ist per RLS nicht erlaubt (keine
+  INSERT-Policy). Die Route validiert und baut den Lead serverseitig (siehe „API-Schutz").
+  Im Supabase-Modus landen **keine** Mandantendaten im localStorage des Besuchers.
+- **Team-Dashboard**: Browser-Anon-Key + Supabase-JWT; RLS-Policy `is_team_member()`
+  entscheidet. `middleware.ts` prüft zusätzlich serverseitig Session (`getUser()`) und
+  Eintrag in `tenant_team`. Der localStorage-Eintrag im Browser ist nur ein UI-Cache und
+  gewährt keinen Zugriff.
+- **Rollen:** `admin` / `bearbeiter` unterscheiden sich bisher nur bei `tenant_settings`
+  (Schreiben nur Admin). Auf `leads` haben beide Rollen dieselben Rechte.
+- **Historie** wird atomar per SQL-Funktion `append_lead_history` angehängt
+  (in `supabase/schema.sql`).
 - **Service-Role-Key** liegt ausschließlich auf dem Server (Vercel-Env),
   nie im Client-Bundle.
 - **Historischer Bezeichner:** Das Feld `ai_summary_source` kennt die Werte
@@ -375,6 +409,18 @@ Zwei Modi, automatisch umgeschaltet:
 2. Umgebungsvariablen unter *Project → Settings → Environment Variables* setzen
    (siehe Tabelle im Abschnitt „Setup").
 3. Nach dem Deploy: Supabase-Projekt nicht pausiert? Einmal Login + kompletten Chat testen.
+
+## Bekannte Grenzen
+
+- **Rate-Limit ist in-memory** (pro Serverless-Instanz) und bremst nur Skripte; kein
+  Captcha/Honeypot. Für Produktion: verteilter Limiter (Upstash Redis) + Bot-Challenge.
+- **`/api/summarize` ist anonym** und verursacht Kosten pro Aufruf (nur IP-limitiert).
+- **Keine automatische Löschung:** Aufbewahrungsfristen sind nicht technisch erzwungen;
+  Löschung und Auskunft laufen manuell (Auskunfts-Druckansicht im Dashboard).
+- **Kein Audit-Log auf DB-Ebene:** Die Historie ist ein JSONB-Feld am Lead, kein
+  manipulationssicheres Protokoll.
+- **Impressum/Datenschutz sind Entwürfe** und nicht rechtlich geprüft.
+- **Lint ist nicht eingerichtet** (`npm run lint` startet nur den interaktiven Next-Assistenten).
 
 ## Spätere Schritte (out-of-scope für diesen MVP)
 

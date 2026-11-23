@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authStore";
-import { getLeadById } from "@/lib/leadStore";
+import { getLead } from "@/lib/clientLeads";
 import { TENANT } from "@/lib/tenant.config";
 import { LEAD_STATUS_LABELS, type Lead } from "@/lib/types";
 
@@ -31,17 +31,21 @@ export default function AuskunftPage() {
       router.replace("/team/login");
       return;
     }
-    if (typeof params?.id === "string") {
-      setLead(getLeadById(params.id));
+    if (typeof params?.id !== "string") {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+    getLead(params.id)
+      .then(setLead)
+      .catch((e) => console.error("[auskunft] Lead konnte nicht geladen werden", e))
+      .finally(() => setLoading(false));
   }, [params, router]);
 
   if (loading) return null;
 
   if (!lead) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-16 text-center">
+      <main id="main" className="mx-auto max-w-3xl px-6 py-16 text-center">
         <h1 className="text-xl font-bold">Lead nicht gefunden</h1>
         <button
           type="button"
@@ -74,7 +78,7 @@ export default function AuskunftPage() {
         }
         @page { margin: 2cm; size: A4; }
       `}</style>
-      <main className="mx-auto max-w-3xl px-6 py-10 bg-white text-ink-dark min-h-screen print:py-0 print:px-0">
+      <main id="main" className="mx-auto max-w-3xl px-6 py-10 bg-white text-ink-dark min-h-screen print:py-0 print:px-0">
         {/* Steuerung — nicht im Druck */}
         <div className="no-print mb-8 flex items-center justify-between gap-3 border-b border-line pb-4">
           <button
