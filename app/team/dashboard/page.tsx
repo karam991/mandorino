@@ -131,6 +131,16 @@ export default function DashboardPage() {
     mine: leads.filter((l) => l.assignedToUserId === user.id).length,
   };
 
+  /** KPI-Karten als Schnellfilter: setzt Status/Bearbeiter, leert Rechtsgebiet + Suche. */
+  function applyQuick(status: StatusFilter, assignee: string) {
+    setStatusFilter(status);
+    setAssigneeFilter(assignee);
+    setAreaFilter("alle");
+    setSearch("");
+  }
+
+  const hiddenCount = counts.total - filtered.length;
+
   async function handleLogout() {
     await logout();
     router.push("/team/login");
@@ -171,9 +181,24 @@ export default function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid sm:grid-cols-3 gap-4 mb-6 animate-fade-up delay-1">
-            <Kpi label="Leads gesamt" value={counts.total} />
-            <Kpi label="Offen (neu / in Bearbeitung / kontaktiert)" value={counts.open} />
-            <Kpi label="Mir zugewiesen" value={counts.mine} />
+            <Kpi
+              label="Leads gesamt"
+              value={counts.total}
+              active={statusFilter === "alle" && assigneeFilter === "alle"}
+              onSelect={() => applyQuick("alle", "alle")}
+            />
+            <Kpi
+              label="Offen (neu / in Bearbeitung / kontaktiert)"
+              value={counts.open}
+              active={statusFilter === "offen" && assigneeFilter === "alle"}
+              onSelect={() => applyQuick("offen", "alle")}
+            />
+            <Kpi
+              label="Mir zugewiesen"
+              value={counts.mine}
+              active={assigneeFilter === "mine" && statusFilter === "alle"}
+              onSelect={() => applyQuick("alle", "mine")}
+            />
           </div>
 
           {/* Filter-Leiste */}
@@ -246,6 +271,21 @@ export default function DashboardPage() {
               </select>
             </FilterField>
           </div>
+
+          {!loading && !loadError && hiddenCount > 0 && (
+            <p className="mb-3 flex flex-wrap items-center gap-x-3 text-sm text-muted" role="status">
+              <span>
+                {filtered.length} von {counts.total} Leads angezeigt – {hiddenCount} durch Filter ausgeblendet.
+              </span>
+              <button
+                type="button"
+                className="font-medium text-ink-dark underline underline-offset-2 hover:no-underline"
+                onClick={() => applyQuick("alle", "alle")}
+              >
+                Alle anzeigen
+              </button>
+            </p>
+          )}
 
           {/* Liste */}
           {loading ? (
@@ -414,7 +454,17 @@ export default function DashboardPage() {
   );
 }
 
-function Kpi({ label, value }: { label: string; value: number }) {
+function Kpi({
+  label,
+  value,
+  active,
+  onSelect,
+}: {
+  label: string;
+  value: number;
+  active: boolean;
+  onSelect: () => void;
+}) {
   const [shown, setShown] = useStateK(0);
   useEffectK(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -433,11 +483,18 @@ function Kpi({ label, value }: { label: string; value: number }) {
     return () => cancelAnimationFrame(raf);
   }, [value]);
   return (
-    <div className="card relative overflow-hidden p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={active}
+      className={`card relative overflow-hidden p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)] ${
+        active ? "ring-2 ring-[color:var(--brand-primary)]" : ""
+      }`}
+    >
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[color:var(--brand-accent)] to-transparent" aria-hidden="true" />
       <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
       <div className="mt-2 font-serif text-4xl font-semibold tabular-nums text-ink-dark">{shown}</div>
-    </div>
+    </button>
   );
 }
 
