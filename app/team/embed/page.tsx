@@ -72,7 +72,7 @@ export default function EmbedSetupPage() {
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           <div className="mb-6">
             <span className="pill bg-ink/10 text-ink-dark mb-2">Einbettung</span>

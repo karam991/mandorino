@@ -32,6 +32,8 @@ export interface TenantBrand {
   primary: string;
   /** Akzentfarbe (HEX). --brand-accent. */
   accent: string;
+  /** Mandarinen-Maskottchen anzeigen (Standard: an). */
+  mascot?: boolean;
 }
 
 export interface TenantLegal {
@@ -104,6 +106,7 @@ export const TENANT: TenantConfig = {
     logoUrl: null, // null → Text-Logo-Fallback
     primary: "#13315C", // ink
     accent: "#C9A86A", // gold
+    mascot: true, // Mandarinen-Maskottchen (Mandorino-Look); false → neutral für Kanzleien ohne Maskottchen
   },
   legal: {
     impressumUrl: "/impressum",

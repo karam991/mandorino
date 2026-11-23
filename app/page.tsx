@@ -1,41 +1,30 @@
 "use client";
 
+import { Briefcase, Car, Home, Laptop, Scale, ScrollText, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Mandarin } from "@/components/Mandarin";
 import { Reveal } from "@/components/Reveal";
 import { listPracticeAreas, type PracticeAreaId } from "@/lib/areas/registry";
 import { getActivePracticeAreaIds } from "@/lib/tenantOverrides";
 import { TENANT } from "@/lib/tenant.config";
 
-/** Kleine, einheitliche Linien-Icons (dekorativ). */
-const ICONS = [
-  <path key="a" d="M12 3v18M5 7h14M5 7l-2.5 6a3 3 0 0 0 5 0L5 7Zm14 0-2.5 6a3 3 0 0 0 5 0L19 7Z" />,
-  <path key="b" d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6" />,
-  <path key="c" d="M8 3h8l4 4v14H4V3h4Zm0 9h8M8 16h5" />,
-  <path key="d" d="M4 7h16v12H4V7Zm5-3h6v3H9V4Zm-5 8h16" />,
-  <path key="e" d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z" />,
-  <path key="f" d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6l-8-3Zm-3 9 2.2 2.2L15.5 10" />,
-];
+/** Icons pro Rechtsgebiet (dekorativ); Fallback für neue Gebiete: Waage. */
+const AREA_ICONS: Record<string, LucideIcon> = {
+  arbeitsrecht: Briefcase,
+  verkehrsrecht: Car,
+  digitales: Laptop,
+  mietrecht: Home,
+  erbrecht: ScrollText,
+};
 
-function Icon({ i }: { i: number }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {ICONS[i % ICONS.length]}
-    </svg>
-  );
+function Icon({ id }: { id: string }) {
+  const C = AREA_ICONS[id] ?? Scale;
+  return <C className="h-6 w-6" strokeWidth={1.6} aria-hidden />;
 }
 
 function Check({ ok }: { ok: boolean }) {
@@ -126,7 +115,10 @@ export default function HomePage() {
             </div>
 
             {/* Illustration: Vorschau des geführten Gesprächs (rein dekorativ) */}
-            <div className="animate-fade-up delay-3 hidden lg:block" aria-hidden="true">
+            <div className="animate-fade-up delay-3 relative hidden lg:block" aria-hidden="true">
+              {TENANT.brand.mascot !== false && (
+                <Mandarin className="pointer-events-none absolute -top-24 -right-12 z-10 h-60 w-56" />
+              )}
               <div className="animate-float rounded-2xl border border-white/15 bg-white/[0.07] p-5 shadow-glow backdrop-blur">
                 <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full brand-accent-bg text-sm font-bold" style={{ color: "var(--brand-primary)" }}>
@@ -212,15 +204,15 @@ export default function HomePage() {
                 Wählen Sie Ihr Rechtsgebiet — wir starten direkt mit den passenden Fragen.
               </p>
             </div>
-            <Reveal><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {areas.map((a, i) => (
+            <Reveal><div className="flex flex-wrap justify-center gap-5">
+              {areas.map((a) => (
                 <Link
                   key={a.id}
                   href={`/chat?area=${encodeURIComponent(a.id)}`}
-                  className="group card flex flex-col gap-3 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--brand-accent)] hover:shadow-lift"
+                  className="group card flex w-full flex-col gap-3 p-7 transition-all duration-300 sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.84rem)] hover:-translate-y-1 hover:border-[color:var(--brand-accent)] hover:shadow-lift"
                 >
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-paper text-ink transition-colors group-hover:brand-bg group-hover:text-white">
-                    <Icon i={i} />
+                    <Icon id={a.id} />
                   </span>
                   <h3 className="text-lg font-semibold">{a.label}</h3>
                   <p className="text-sm text-muted leading-relaxed">{a.blurb}</p>

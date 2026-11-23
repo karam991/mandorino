@@ -56,7 +56,7 @@ export default function LeadDetailPage() {
     return (
       <>
         <Header variant="team" />
-        <main className="flex-1 bg-paper">
+        <main id="main" className="flex-1 bg-paper">
           <section className="mx-auto max-w-2xl px-4 sm:px-6 py-16 text-center">
             <h1 className="text-2xl font-bold mb-3">Lead nicht gefunden</h1>
             <Link href="/team/dashboard" className="btn-primary">
@@ -116,7 +116,7 @@ export default function LeadDetailPage() {
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <Link
@@ -353,6 +353,7 @@ export default function LeadDetailPage() {
                 </h2>
                 <select
                   className="input"
+                  aria-label="Bearbeiter:in zuweisen"
                   value={lead.assignedToUserId ?? ""}
                   onChange={(e) => onAssign(e.target.value)}
                 >

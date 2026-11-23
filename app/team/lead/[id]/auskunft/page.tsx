@@ -45,7 +45,7 @@ export default function AuskunftPage() {
 
   if (!lead) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-16 text-center">
+      <main id="main" className="mx-auto max-w-3xl px-6 py-16 text-center">
         <h1 className="text-xl font-bold">Lead nicht gefunden</h1>
         <button
           type="button"
@@ -78,7 +78,7 @@ export default function AuskunftPage() {
         }
         @page { margin: 2cm; size: A4; }
       `}</style>
-      <main className="mx-auto max-w-3xl px-6 py-10 bg-white text-ink-dark min-h-screen print:py-0 print:px-0">
+      <main id="main" className="mx-auto max-w-3xl px-6 py-10 bg-white text-ink-dark min-h-screen print:py-0 print:px-0">
         {/* Steuerung — nicht im Druck */}
         <div className="no-print mb-8 flex items-center justify-between gap-3 border-b border-line pb-4">
           <button

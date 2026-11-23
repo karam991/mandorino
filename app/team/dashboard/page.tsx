@@ -149,7 +149,7 @@ export default function DashboardPage() {
   return (
     <>
       <Header variant="team" />
-      <main className="flex-1 bg-paper">
+      <main id="main" className="flex-1 bg-paper">
         <section className="mx-auto max-w-page px-4 sm:px-6 py-6">
           {/* Top-Leiste */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-7 animate-fade-up">
@@ -361,7 +361,7 @@ export default function DashboardPage() {
                     <th className="px-4 py-3">Streitwert</th>
                     <th className="px-4 py-3">Dok.</th>
                     <th className="px-4 py-3">Bearbeiter:in</th>
-                    <th className="px-4 py-3" />
+                    <th className="px-4 py-3"><span className="sr-only">Aktionen</span></th>
                   </tr>
                 </thead>
                 <tbody>

@@ -15,6 +15,7 @@ export default function ChatPage() {
       <Header variant="client" />
       <DisclaimerBanner />
 
+      <main id="main" className="flex-1">
       <section className="relative isolate overflow-hidden brand-bg text-white">
         <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
         <div
@@ -45,7 +46,6 @@ export default function ChatPage() {
         </div>
       </section>
 
-      <main id="main" className="flex-1">
         <Suspense fallback={<div className="p-8 text-center text-muted">Lade Chat…</div>}>
           <ChatContainer variant="page" />
         </Suspense>
