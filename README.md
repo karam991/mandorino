@@ -15,6 +15,55 @@ Zuweisung, Notizen und Bearbeitungs-Priorität.
 > Stellen verankert (UI-Disclaimer, Chat-Skript, KI-System-Prompt,
 > Template-Fallback).
 
+<p align="center">
+  <img src="docs/screenshots/01-landing-hero.png" alt="Landing Page von Mandorino mit Mandarinen-Maskottchen" width="900">
+</p>
+
+## Auf einen Blick
+
+| Mandant:in — geführter Chat | Team — Dashboard & Workflow |
+|---|---|
+| ![Chat-Flow](docs/demo-chat.gif) | ![Team-Workflow](docs/demo-team.gif) |
+
+**Was dieses Projekt zeigt**
+
+- **Produktdenken:** White-Label für Kanzleien, RDG-konform (keine Rechtsberatung) — vom Chat-Skript bis zum KI-Prompt.
+- **Sicherheit statt Fassade:** Der Server baut jeden Lead selbst (Validierung, `insert` statt `upsert`, signierte KI-Zusammenfassung), `/team/*` wird per Middleware und Supabase-RLS geschützt, Rate-Limits pro IP und E-Mail, Embed-Allowlist per CSP.
+- **Datenfluss mit Datenbank:** Supabase/Postgres mit Row-Level-Security, atomare Historien-Einträge per SQL-Funktion, Demo-Modus nur per explizitem Flag.
+- **Qualität:** 21 Unit-Tests (Vitest), TypeScript strict, CI auf GitHub Actions, automatisierter Accessibility-Check (axe, WCAG 2.2 AA) ohne Verstöße auf allen Seiten.
+- **UX:** responsiv (Mobile-Menü, Karten statt Tabelle), Lade-/Fehler-/Leerzustände, Toasts, `prefers-reduced-motion`, 3D-Mandarinen-Maskottchen als reines SVG (ohne 3D-Bibliothek, `/embed` bleibt bei 107 kB).
+
+<details>
+<summary><b>Weitere Screenshots</b></summary>
+
+| | |
+|---|---|
+| ![Rechtsgebiete](docs/screenshots/02-landing-areas.png) | ![Chat](docs/screenshots/03-chat-conversation.png) |
+| ![Kontaktformular](docs/screenshots/04-chat-contact.png) | ![Danke-Seite](docs/screenshots/05-thank-you.png) |
+| ![Team-Login](docs/screenshots/06-team-login.png) | ![Dashboard](docs/screenshots/07-dashboard.png) |
+| ![Lead-Detail](docs/screenshots/08-lead-detail.png) | ![Auswertung](docs/screenshots/09-analytics.png) |
+
+Mobil:
+
+<img src="docs/screenshots/10-mobile-landing.png" width="220"> <img src="docs/screenshots/11-mobile-chat.png" width="220"> <img src="docs/screenshots/12-mobile-dashboard.png" width="220">
+
+</details>
+
+### In einer Minute lokal ausprobieren (ohne Konten)
+
+```bash
+git clone https://github.com/karam991/mandorino.git && cd mandorino
+npm install
+echo 'NEXT_PUBLIC_DEMO_MODE=1
+NEXT_PUBLIC_DEMO_PASSWORD=demo' > .env.local
+npm run dev
+```
+
+Dann http://localhost:3000 öffnen. Team-Login unter `/team/login` mit
+`t.hartmann@hartmann-kollegen.de` und dem Passwort `demo` — beim ersten Aufruf liegen
+5 Demo-Leads bereit. (Der Demo-Modus arbeitet nur mit Fake-Daten im Browser; die
+Live-Demo nutzt dagegen echtes Supabase-Login.)
+
 ## Tech-Stack
 
 - **Next.js 14** (App Router) + **TypeScript**
@@ -70,7 +119,7 @@ Alles, was pro Kanzlei anders ist, lebt in `lib/tenant.config.ts`:
 
 ```ts
 TENANT = {
-  brand: { kanzleiName, tagline, logoUrl, primary, accent },
+  brand: { kanzleiName, tagline, logoUrl, primary, accent, mascot },
   legal: { impressumUrl, datenschutzUrl, rueckmeldungInnerhalb, provider: { name, street, ... } },
   practiceAreas: [ "arbeitsrecht", "verkehrsrecht", ... ],
   team: [ { id, name, email, role } ],  // Anzeige/Zuweisung — Zugriff regelt die DB-Tabelle tenant_team
@@ -83,6 +132,8 @@ TENANT = {
   `--brand-accent`) gesetzt und über die Klassen `brand-bg` / `brand-text` /
   `brand-border` im UI verwendet.
 - **Logo:** wenn `logoUrl` gesetzt, wird das Bild geladen, sonst Text-Fallback.
+- **Maskottchen:** Die 3D-Mandarine (Landing, Login, Danke-Seite) lässt sich pro Kanzlei mit
+  `brand.mascot: false` abschalten.
 - **Aktive Rechtsgebiete** werden auf der Landing automatisch als Karten
   gerendert und stehen im Chat als Themen-Auswahl zur Verfügung. Das Team kann
   sie unter `/team/settings` umschalten.
