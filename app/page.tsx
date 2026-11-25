@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Car, Home, Laptop, Scale, ScrollText, type LucideIcon } from "lucide-react";
+import { Briefcase, Car, ChevronRight, Home, Laptop, Scale, ScrollText, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -25,19 +25,7 @@ const AREA_ICONS: Record<string, LucideIcon> = {
 
 function Icon({ id }: { id: string }) {
   const C = AREA_ICONS[id] ?? Scale;
-  return <C className="h-6 w-6" strokeWidth={1.6} aria-hidden />;
-}
-
-/**
- * Spalten im 6er-Raster, sodass jede Zeile voll ist — egal wie viele Gebiete
- * das Team aktiviert hat (z. B. 5 → zwei breite, darunter drei schmale).
- */
-function areaSpan(index: number, total: number): string {
-  const rest = total % 3;
-  const wide = total === 1 ? 0 : rest === 2 ? 2 : rest === 1 ? 4 : 0;
-  const lg = total === 1 ? "lg:col-span-6" : index < wide ? "lg:col-span-3" : "lg:col-span-2";
-  const sm = total % 2 === 1 && index === total - 1 ? "sm:col-span-2" : "";
-  return `${sm} ${lg}`;
+  return <C className="h-5 w-5" strokeWidth={1.6} aria-hidden />;
 }
 
 function Check({ ok }: { ok: boolean }) {
@@ -203,33 +191,43 @@ export default function HomePage() {
 
         {/* ---- RECHTSGEBIETE ---- */}
         <section id="bereiche" className="scroll-mt-20 border-t border-line bg-white">
-          <div className="mx-auto max-w-page px-4 sm:px-6 py-20 sm:py-24">
-            <div className="max-w-2xl mb-12">
+          <div className="mx-auto grid max-w-page gap-10 px-4 py-20 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
+            <div className="lg:sticky lg:top-28 lg:self-start">
               <span className="text-sm font-semibold brand-text">Unsere Schwerpunkte</span>
               <h2 className="mt-3 text-title font-semibold">In welchem Bereich können wir helfen?</h2>
-              <p className="mt-3 text-muted leading-relaxed">
+              <p className="mt-3 max-w-md text-muted leading-relaxed">
                 Wählen Sie Ihr Rechtsgebiet — wir starten direkt mit den passenden Fragen.
               </p>
+              <Link href="/chat" className="btn-primary mt-7">
+                Anliegen schildern
+                <span aria-hidden="true">→</span>
+              </Link>
             </div>
-            <Reveal><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
-              {areas.map((a, i) => (
-                <Link
-                  key={a.id}
-                  href={`/chat?area=${encodeURIComponent(a.id)}`}
-                  className={`group card flex flex-col gap-3 p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-soft hover:border-[color:var(--brand-accent)] hover:shadow-lift ${areaSpan(i, areas.length)}`}
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-paper text-ink transition-colors group-hover:brand-bg group-hover:text-white">
-                    <Icon id={a.id} />
-                  </span>
-                  <h3 className="text-lg font-semibold">{a.label}</h3>
-                  <p className="text-sm text-muted leading-relaxed">{a.blurb}</p>
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-medium brand-text">
-                    Anliegen schildern
-                    <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">→</span>
-                  </span>
-                </Link>
-              ))}
-            </div></Reveal>
+            {/* Verzeichnis: eine Zeile je Gebiet, die ganze Zeile ist der Link */}
+            <Reveal>
+              <ul className="divide-y divide-line border-y border-line">
+                {areas.map((a) => (
+                  <li key={a.id}>
+                    <Link
+                      href={`/chat?area=${encodeURIComponent(a.id)}`}
+                      className="group flex items-center gap-4 px-2 py-5 transition-colors duration-200 ease-out hover:bg-paper active:bg-paper-dark sm:gap-5 sm:px-4"
+                    >
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center self-start rounded-full bg-paper text-ink transition-colors group-hover:bg-white">
+                        <Icon id={a.id} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-semibold">{a.label}</h3>
+                        <p className="mt-1 text-sm leading-relaxed text-muted">{a.blurb}</p>
+                      </div>
+                      <ChevronRight
+                        className="h-5 w-5 shrink-0 text-muted transition-transform duration-200 ease-out group-hover:translate-x-1 group-hover:text-ink"
+                        aria-hidden
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
           </div>
         </section>
 
