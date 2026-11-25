@@ -27,6 +27,18 @@ function Icon({ id }: { id: string }) {
   return <C className="h-6 w-6" strokeWidth={1.6} aria-hidden />;
 }
 
+/**
+ * Spalten im 6er-Raster, sodass jede Zeile voll ist — egal wie viele Gebiete
+ * das Team aktiviert hat (z. B. 5 → zwei breite, darunter drei schmale).
+ */
+function areaSpan(index: number, total: number): string {
+  const rest = total % 3;
+  const wide = total === 1 ? 0 : rest === 2 ? 2 : rest === 1 ? 4 : 0;
+  const lg = total === 1 ? "lg:col-span-6" : index < wide ? "lg:col-span-3" : "lg:col-span-2";
+  const sm = total % 2 === 1 && index === total - 1 ? "sm:col-span-2" : "";
+  return `${sm} ${lg}`;
+}
+
 function Check({ ok }: { ok: boolean }) {
   return (
     <span
@@ -153,8 +165,8 @@ export default function HomePage() {
         </section>
 
         {/* ---- SO FUNKTIONIERT ES ---- */}
-        <section className="mx-auto max-w-page px-4 sm:px-6 py-20">
-          <div className="max-w-2xl mb-12">
+        <section className="mx-auto max-w-page px-4 sm:px-6 py-20 sm:py-28">
+          <div className="max-w-2xl mb-12 sm:mb-16">
             <span className="text-sm font-semibold brand-text">In 3 Schritten</span>
             <h2 className="mt-3 text-title font-semibold">So funktioniert es</h2>
             <p className="mt-3 text-muted leading-relaxed">
@@ -162,8 +174,7 @@ export default function HomePage() {
               versteckten Kosten, keine Verpflichtung.
             </p>
           </div>
-          <Reveal><ol className="relative grid sm:grid-cols-3 gap-5">
-            <div className="absolute left-0 right-0 top-7 hidden sm:block h-px bg-gradient-to-r from-transparent via-line to-transparent" aria-hidden="true" />
+          <Reveal><ol className="grid md:grid-cols-3 md:gap-10">
             {[
               {
                 step: "1",
@@ -183,12 +194,14 @@ export default function HomePage() {
                 body: `Innerhalb ${TENANT.legal.rueckmeldungInnerhalb} hören Sie persönlich von uns — telefonisch oder per E-Mail, ganz wie Sie es wünschen.`,
               },
             ].map((s) => (
-              <li key={s.step} className="card relative p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-                <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl brand-bg font-serif text-2xl text-white shadow-card">
+              <li key={s.step} className="timeline-step relative flex gap-5 pb-10 last:pb-0 md:block md:pb-0">
+                <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full brand-bg font-serif text-2xl text-white shadow-card ring-4 ring-paper md:mb-6">
                   {s.step}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
-                <p className="text-sm text-muted leading-relaxed">{s.body}</p>
+                <div className="pt-1.5 md:pt-0">
+                  <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
+                  <p className="max-w-[48ch] text-base text-muted leading-relaxed">{s.body}</p>
+                </div>
               </li>
             ))}
           </ol></Reveal>
@@ -196,7 +209,7 @@ export default function HomePage() {
 
         {/* ---- RECHTSGEBIETE ---- */}
         <section id="bereiche" className="scroll-mt-20 border-t border-line bg-white">
-          <div className="mx-auto max-w-page px-4 sm:px-6 py-20">
+          <div className="mx-auto max-w-page px-4 sm:px-6 py-20 sm:py-24">
             <div className="max-w-2xl mb-12">
               <span className="text-sm font-semibold brand-text">Unsere Schwerpunkte</span>
               <h2 className="mt-3 text-title font-semibold">In welchem Bereich können wir helfen?</h2>
@@ -204,12 +217,12 @@ export default function HomePage() {
                 Wählen Sie Ihr Rechtsgebiet — wir starten direkt mit den passenden Fragen.
               </p>
             </div>
-            <Reveal><div className="flex flex-wrap justify-center gap-5">
-              {areas.map((a) => (
+            <Reveal><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+              {areas.map((a, i) => (
                 <Link
                   key={a.id}
                   href={`/chat?area=${encodeURIComponent(a.id)}`}
-                  className="group card flex w-full flex-col gap-3 p-7 transition-all duration-300 sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.84rem)] hover:-translate-y-1 hover:border-[color:var(--brand-accent)] hover:shadow-lift"
+                  className={`group card flex flex-col gap-3 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--brand-accent)] hover:shadow-lift ${areaSpan(i, areas.length)}`}
                 >
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-paper text-ink transition-colors group-hover:brand-bg group-hover:text-white">
                     <Icon id={a.id} />
@@ -227,9 +240,9 @@ export default function HomePage() {
         </section>
 
         {/* ---- WAS DER CHAT TUT / NICHT TUT ---- */}
-        <section className="mx-auto max-w-page px-4 sm:px-6 py-20">
-          <Reveal><div className="grid md:grid-cols-2 gap-5">
-            <div className="card p-8">
+        <section className="mx-auto max-w-page px-4 sm:px-6 py-16 sm:py-20">
+          <Reveal><div className="card grid divide-y divide-line md:grid-cols-2 md:divide-x md:divide-y-0">
+            <div className="p-7 sm:p-10">
               <h3 className="text-lg font-semibold text-ink-dark mb-5">Was der Chat tut</h3>
               <ul className="space-y-3 text-sm text-ink-dark/90">
                 {[
@@ -245,7 +258,7 @@ export default function HomePage() {
                 ))}
               </ul>
             </div>
-            <div className="card p-8">
+            <div className="rounded-b-2xl bg-paper/60 p-7 sm:p-10 md:rounded-bl-none md:rounded-r-2xl">
               <h3 className="text-lg font-semibold text-ink-dark mb-5">Was der Chat bewusst nicht tut</h3>
               <ul className="space-y-3 text-sm text-ink-dark/90">
                 {[
@@ -265,10 +278,12 @@ export default function HomePage() {
         </section>
 
         {/* ---- FAQ ---- */}
-        <section className="mx-auto max-w-3xl px-4 sm:px-6 pb-20">
-          <Reveal>
-            <span className="text-sm font-semibold brand-text">Häufige Fragen</span>
-            <h2 className="mt-3 mb-8 text-title font-semibold">Gut zu wissen</h2>
+        <section className="mx-auto max-w-page px-4 sm:px-6 pt-4 pb-20 sm:pb-28">
+          <Reveal className="grid gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-12">
+            <div>
+              <span className="text-sm font-semibold brand-text">Häufige Fragen</span>
+              <h2 className="mt-3 text-title font-semibold">Gut zu wissen</h2>
+            </div>
             <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-soft">
               {[
                 {
@@ -303,7 +318,7 @@ export default function HomePage() {
         </section>
 
         {/* ---- ABSCHLUSS-CTA ---- */}
-        <section className="mx-auto max-w-page px-4 sm:px-6 pb-16">
+        <section className="mx-auto max-w-page px-4 sm:px-6 pb-8">
           <Reveal>
             <div className="relative isolate overflow-hidden rounded-3xl brand-bg px-8 py-12 text-center text-white sm:px-14 sm:py-16">
               <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
@@ -329,7 +344,7 @@ export default function HomePage() {
           </Reveal>
         </section>
 
-        <section className="mx-auto max-w-page px-4 sm:px-6 pb-20">
+        <section className="mx-auto max-w-page px-4 sm:px-6 pb-4">
           <DisclaimerBanner variant="prominent" />
         </section>
       </main>

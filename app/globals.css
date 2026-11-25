@@ -125,6 +125,13 @@
     background-color: var(--brand-accent);
   }
 
+  /* Verbindungslinie der Schritte: senkrecht auf dem Handy, waagerecht ab md */
+  .timeline-step:not(:last-child)::before {
+    content: "";
+    @apply absolute bg-line left-7 top-14 bottom-0 w-px
+           md:left-14 md:right-[-2.5rem] md:top-7 md:bottom-auto md:h-px md:w-auto;
+  }
+
   /* Status-Pills für das Dashboard */
   .status-neu {
     @apply pill before:content-[''] before:mr-1.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-current bg-blue-100 text-blue-800;
