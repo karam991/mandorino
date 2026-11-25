@@ -17,12 +17,7 @@ export default function ChatPage() {
 
       <main id="main" className="flex-1">
       <section className="relative isolate overflow-hidden brand-bg text-white">
-        <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
-        <div
-          className="absolute -right-24 -top-32 -z-10 h-80 w-80 rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
-          aria-hidden="true"
-        />
+        <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
         <div className="mx-auto max-w-page px-4 py-9 sm:px-6 sm:py-12">
           <h1 className="animate-fade-up text-title font-semibold !text-white">
             Schildern Sie uns Ihr{" "}

@@ -2,6 +2,7 @@
 
 import { useEffect as useEffectK, useState as useStateK } from "react";
 
+import { Paperclip } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -423,7 +424,7 @@ export default function DashboardPage() {
                               className="inline-flex items-center gap-1 pill bg-paper-dark text-ink-dark"
                               title={`${docCount} Unterlage(n) genannt`}
                             >
-                              <span aria-hidden>📎</span>
+                              <Paperclip className="h-3 w-3" aria-hidden />
                               {docCount}
                             </span>
                           ) : (

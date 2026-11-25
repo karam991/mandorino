@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useEffect } from "react";
 
 import { TENANT } from "@/lib/tenant.config";
@@ -33,8 +34,8 @@ export default function EmbedDankePage() {
         {TENANT.brand.kanzleiName}
       </div>
       <div className="p-6 text-center">
-        <div className="w-12 h-12 rounded-full brand-bg text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-          ✓
+        <div className="check-pop seal brand-bg mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-white">
+          <Check className="h-7 w-7" strokeWidth={2.75} aria-hidden />
         </div>
         <h1 className="text-xl font-bold mb-2">Vielen Dank — Ihre Anfrage ist eingegangen.</h1>
         <p className="text-sm text-muted leading-relaxed">

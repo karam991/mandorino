@@ -72,15 +72,10 @@ export default function HomePage() {
       <main id="main" className="flex-1">
         {/* ---- HERO ---- */}
         <section className="relative isolate overflow-hidden brand-bg text-white">
-          <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
-          <div
-            className="absolute -top-40 -right-32 -z-10 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
-            style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
-            aria-hidden="true"
-          />
-          <div className="mx-auto max-w-page px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
-            <div>
-              <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
+          <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
+          <div className="mx-auto max-w-page px-4 sm:px-6 py-8 sm:py-20 grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] gap-12 items-center">
+            <div className="flex flex-col">
+              <span className="animate-fade-up inline-flex self-start items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full brand-accent-bg" aria-hidden="true" />
                 {TENANT.brand.kanzleiName}
               </span>
@@ -90,16 +85,16 @@ export default function HomePage() {
                   Wir hören zu — und handeln.
                 </span>
               </h1>
-              <p className="animate-fade-up delay-2 mt-6 max-w-xl text-lg leading-relaxed text-white/80">
+              <p className="animate-fade-up delay-2 mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-white/80">
                 Schildern Sie uns Ihren Fall in einem ruhigen, geführten Gespräch. Wir
                 stellen die Fragen, die wir sonst im Erstgespräch stellen würden, und
                 melden uns innerhalb {TENANT.legal.rueckmeldungInnerhalb} persönlich bei
                 Ihnen zurück.
               </p>
-              <p className="animate-fade-up delay-2 mt-3 max-w-xl text-base text-white/65">
+              <p className="animate-fade-up delay-2 order-1 mt-6 sm:order-none sm:mt-3 max-w-xl text-base text-white/70">
                 Kein Wartezimmer, kein Termindruck — nehmen Sie sich die Zeit, die Sie brauchen.
               </p>
-              <div className="animate-fade-up delay-3 mt-9 flex flex-col sm:flex-row gap-3">
+              <div className="animate-fade-up delay-3 mt-6 sm:mt-9 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/chat"
                   className="btn !bg-[color:var(--brand-accent)] !text-[color:var(--brand-primary)] hover:brightness-110 shadow-glow !px-6 !py-3.5"
@@ -114,7 +109,7 @@ export default function HomePage() {
                   Unsere Rechtsgebiete ansehen
                 </Link>
               </div>
-              <ul className="animate-fade-up delay-4 mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
+              <ul className="animate-fade-up delay-4 order-2 mt-6 sm:order-none sm:mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
                 {["Vertraulich", "Unverbindlich", "Persönliche Rückmeldung"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--brand-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -131,29 +126,29 @@ export default function HomePage() {
               {TENANT.brand.mascot !== false && (
                 <Mandarin className="pointer-events-none absolute -top-36 -right-6 z-10 h-40 w-36" />
               )}
-              <div className="animate-float rounded-2xl border border-white/15 bg-white/[0.07] p-5 shadow-glow backdrop-blur">
-                <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full brand-accent-bg text-sm font-bold" style={{ color: "var(--brand-primary)" }}>
+              <div className="surface-raised rounded-2xl p-5 text-ink-dark">
+                <div className="mb-4 flex items-center gap-3 border-b border-line pb-4">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full brand-bg text-sm font-bold text-white">
                     {TENANT.brand.kanzleiName.charAt(0)}
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Geführtes Gespräch</div>
-                    <div className="text-xs text-white/60">Schritt 2 von 6</div>
+                    <div className="text-xs text-muted">Schritt 2 von 6</div>
                   </div>
                 </div>
                 <div className="space-y-3 text-sm">
-                  <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white/90 px-4 py-2.5 text-ink-dark">
+                  <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-line bg-white px-4 py-2.5 shadow-soft">
                     Worum geht es in Ihrem Anliegen? Beschreiben Sie es gern in eigenen Worten.
                   </div>
-                  <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-[color:var(--brand-accent)] px-4 py-2.5 font-medium" style={{ color: "var(--brand-primary)" }}>
+                  <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm brand-bg px-4 py-2.5 text-white shadow-card">
                     Ich habe eine Kündigung erhalten.
                   </div>
-                  <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white/90 px-4 py-2.5 text-ink-dark">
+                  <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-line bg-white px-4 py-2.5 shadow-soft">
                     Danke. Wann haben Sie das Schreiben erhalten?
                   </div>
-                  <div className="flex gap-2 pt-1">
+                  <div className="flex flex-wrap gap-2 pt-1">
                     {["Diese Woche", "Letzte Woche", "Früher"].map((c) => (
-                      <span key={c} className="rounded-full border border-white/25 px-3 py-1 text-xs text-white/85">
+                      <span key={c} className="rounded-full border border-line bg-white px-3 py-1 text-xs">
                         {c}
                       </span>
                     ))}
@@ -321,12 +316,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-page px-4 sm:px-6 pb-8">
           <Reveal>
             <div className="relative isolate overflow-hidden rounded-3xl brand-bg px-8 py-12 text-center text-white sm:px-14 sm:py-16">
-              <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
-              <div
-                className="absolute -bottom-32 left-1/2 -z-10 h-72 w-[34rem] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
-                style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
-                aria-hidden="true"
-              />
+              <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
               <h2 className="text-title font-semibold !text-white">
                 Bereit, Ihr Anliegen{" "}
                 <span style={{ color: "var(--brand-accent)" }}>zu schildern?</span>

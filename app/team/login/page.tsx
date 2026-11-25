@@ -9,17 +9,42 @@ import { getCurrentUser, tryLogin, verifySession } from "@/lib/authStore";
 import { isDemoMode, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { TENANT } from "@/lib/tenant.config";
 
-/** Animierte Waage (Justitia) — dekorativ. */
+/** Mischt die Akzentfarbe mit Weiß/Schwarz → Metall-Verlauf in Markenfarbe. */
+const tone = (mixWith: "white" | "black", pct: number) => ({
+  stopColor: `color-mix(in srgb, var(--brand-accent), ${mixWith} ${pct}%)`,
+});
+
+/** Animierte Waage (Justitia) als gebürstetes Metall — dekorativ. */
 function Scales() {
   return (
-    <svg viewBox="0 0 200 200" className="h-56 w-56 sm:h-64 sm:w-64" fill="none" stroke="var(--brand-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path className="draw" d="M62 182h76M100 182V46" />
-      <circle className="draw draw-2" cx="100" cy="40" r="7" />
+    <svg viewBox="0 0 200 200" className="h-56 w-56 drop-shadow-[0_16px_18px_rgba(0,0,0,0.4)] sm:h-64 sm:w-64" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <defs>
+        {/* userSpaceOnUse: waagerechte/senkrechte Linien haben sonst keine Verlaufsfläche */}
+        <linearGradient id="scMetal" gradientUnits="userSpaceOnUse" x1="30" y1="30" x2="170" y2="190">
+          <stop offset="0" style={tone("white", 55)} />
+          <stop offset="0.35" style={tone("white", 5)} />
+          <stop offset="0.55" style={tone("white", 38)} />
+          <stop offset="1" style={tone("black", 42)} />
+        </linearGradient>
+        <linearGradient id="scPan" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" style={tone("white", 45)} />
+          <stop offset="0.25" style={tone("black", 8)} />
+          <stop offset="1" style={tone("black", 55)} />
+        </linearGradient>
+      </defs>
+      {/* Sockel */}
+      <ellipse cx="100" cy="186" rx="46" ry="6" fill="url(#scPan)" />
+      <ellipse cx="100" cy="181" rx="28" ry="4.5" fill="url(#scPan)" />
+      <path className="draw" d="M100 180V46" stroke="url(#scMetal)" strokeWidth="6" />
+      <circle className="draw draw-2" cx="100" cy="40" r="7" stroke="url(#scMetal)" strokeWidth="4" />
       <g className="origin-[100px_62px] animate-swing">
-        <path className="draw draw-2" d="M34 62h132" />
-        <path className="draw draw-3" d="M44 62 22 122M44 62l22 60M156 62l-22 60M156 62l22 60" />
-        <path className="draw draw-3" d="M16 122q28 34 56 0Z" />
-        <path className="draw draw-3" d="M128 122q28 34 56 0Z" />
+        <path className="draw draw-2" d="M34 62h132" stroke="url(#scMetal)" strokeWidth="5" />
+        <path className="draw draw-3" d="M44 62 22 122M44 62l22 60M156 62l-22 60M156 62l22 60" stroke="url(#scMetal)" strokeWidth="1.4" />
+        <path d="M16 122q28 34 56 0Z" fill="url(#scPan)" />
+        <path d="M128 122q28 34 56 0Z" fill="url(#scPan)" />
+        <path className="draw draw-3" d="M16 122h56M128 122h56" stroke="url(#scMetal)" strokeWidth="2.4" />
+        <circle cx="44" cy="62" r="3.5" fill="url(#scPan)" />
+        <circle cx="156" cy="62" r="3.5" fill="url(#scPan)" />
       </g>
     </svg>
   );
@@ -72,12 +97,7 @@ export default function TeamLoginPage() {
     <main id="main" className="min-h-screen grid lg:grid-cols-[1.05fr_0.95fr] bg-paper">
       {/* ---- Linke Seite: Markenwelt ---- */}
       <section className="relative isolate hidden overflow-hidden brand-bg text-white lg:flex flex-col justify-between p-12">
-        <div className="hero-grid absolute inset-0 -z-10" aria-hidden="true" />
-        <div
-          className="absolute -bottom-40 -left-24 -z-10 h-[560px] w-[560px] rounded-full opacity-25 blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
-          aria-hidden="true"
-        />
+        <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
         <div className="animate-fade-up">
           <div className="text-xl font-semibold tracking-tight">{TENANT.brand.kanzleiName}</div>
           <div className="mt-0.5 text-xs text-white/60">{TENANT.brand.tagline}</div>
@@ -101,18 +121,18 @@ export default function TeamLoginPage() {
         {/* Vorschau-Karte (rein dekorativ, fiktive Daten) */}
         <div className="animate-fade-up delay-4 relative max-w-sm" aria-hidden="true">
           <Mandarin className="pointer-events-none absolute -bottom-3 left-full z-10 -ml-10 h-32 w-28 xl:ml-0 xl:h-40 xl:w-36" />
-          <div className="animate-float max-w-sm rounded-2xl border border-white/15 bg-white/[0.07] p-4 shadow-glow backdrop-blur">
-            <div className="flex items-center justify-between text-xs text-white/60">
+          <div className="surface-raised max-w-sm rounded-2xl p-4 text-ink-dark">
+            <div className="flex items-center justify-between text-xs text-muted">
               <span>Neue Anfrage</span>
               <span className="rounded-full bg-[color:var(--brand-accent)] px-2 py-0.5 font-medium" style={{ color: "var(--brand-primary)" }}>
                 Hoch
               </span>
             </div>
             <div className="mt-2 text-sm font-semibold">Beispiel · Arbeitsrecht</div>
-            <div className="mt-1 text-xs text-white/65">Kündigung erhalten · Rückmeldung innerhalb 24 Std.</div>
+            <div className="mt-1 text-xs text-muted">Kündigung erhalten · Rückmeldung innerhalb 24 Std.</div>
             <div className="mt-3 flex gap-2">
               {["Neu", "In Bearbeitung"].map((t, i) => (
-                <span key={t} className={`rounded-full px-2.5 py-1 text-xs ${i === 0 ? "bg-white/90 text-ink-dark" : "border border-white/25 text-white/80"}`}>
+                <span key={t} className={`rounded-full px-2.5 py-1 text-xs ${i === 0 ? "brand-bg text-white" : "border border-line bg-white"}`}>
                   {t}
                 </span>
               ))}
