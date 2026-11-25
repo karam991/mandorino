@@ -49,7 +49,7 @@ export function TeamNav() {
           <Menu className="h-4 w-4" aria-hidden />
           Menü
         </summary>
-        <div className="absolute right-0 z-50 mt-2 w-60 rounded-xl border border-line bg-white p-1.5 text-ink-dark shadow-soft">
+        <div className="on-light absolute right-0 z-50 mt-2 w-60 rounded-xl border border-line bg-white p-1.5 text-ink-dark shadow-soft">
           {TEAM_LINKS.map(({ href, label, Icon }) => (
             <Link
               key={href}

@@ -58,7 +58,16 @@
 
   /* Focus styles für Tastatur-Nutzer */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ink;
+    outline: 2px solid var(--focus-ring, rgb(var(--ink)));
+    outline-offset: 2px;
+  }
+  /* Auf Markenflächen wäre ein Ring in Markenfarbe unsichtbar → Akzentfarbe.
+     .on-light setzt helle Inseln (z. B. Dropdown im Header) wieder zurück. */
+  .brand-bg {
+    --focus-ring: var(--brand-accent);
+  }
+  .on-light {
+    --focus-ring: rgb(var(--ink));
   }
 }
 
@@ -108,7 +117,7 @@
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-line bg-white transition
+    @apply w-full px-4 py-3 rounded-xl border border-muted/70 bg-white transition
            text-ink-dark placeholder-muted
            focus:outline-none focus:border-ink focus:ring-2 focus:ring-ink/10
            disabled:bg-paper-dark disabled:cursor-not-allowed;
