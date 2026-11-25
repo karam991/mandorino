@@ -150,7 +150,7 @@ function Kpi({
   Icon: LucideIcon;
 }) {
   return (
-    <div className="card relative overflow-hidden p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+    <div className="card relative overflow-hidden p-5">
       <div
         className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[color:var(--brand-accent)] to-transparent"
         aria-hidden="true"

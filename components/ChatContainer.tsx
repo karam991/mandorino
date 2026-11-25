@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -386,7 +387,7 @@ export function ChatContainer({
             return (
               <li key={label} className="flex flex-col items-center gap-1" aria-current={state === "current" ? "step" : undefined}>
                 <span
-                  className={`h-1.5 w-5 rounded-full transition-all duration-500 min-[400px]:w-8 sm:w-12 ${
+                  className={`h-1.5 w-5 rounded-full transition-[background-color,opacity] duration-500 min-[400px]:w-8 sm:w-12 ${
                     state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
                   } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
                 />
@@ -427,7 +428,7 @@ export function ChatContainer({
             type="button"
             onClick={handleUndo}
             disabled={history.length === 0 || stepId === "summary"}
-            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-dark transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+            className="btn-quiet"
             title={
               stepId === "summary"
                 ? 'In der Zusammenfassung können Sie unten „Zusammenfassung neu erstellen" oder hier „Chat verlassen" wählen.'
@@ -440,7 +441,7 @@ export function ChatContainer({
             <button
               type="button"
               onClick={handleAdviceQuestion}
-              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-dark transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)]"
+              className="btn-quiet"
             >
               Ich brauche eine rechtliche Einschätzung — was ist hier möglich?
             </button>
@@ -448,7 +449,7 @@ export function ChatContainer({
           <button
             type="button"
             onClick={handleLeave}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-red-50 hover:text-red-700 active:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
           >
             Chat verlassen
           </button>
@@ -712,7 +713,7 @@ export function ChatContainer({
         <div className="flex flex-col gap-4">
           {summary ? (
             <>
-              <div className="bg-paper-dark border border-line rounded-lg p-4 text-sm text-ink-dark/95 leading-relaxed whitespace-pre-wrap">
+              <div className="animate-bubble-in bg-paper-dark border border-line rounded-lg p-4 text-sm text-ink-dark/95 leading-relaxed whitespace-pre-wrap">
                 {summary}
               </div>
               <p className="text-xs text-muted">
@@ -722,6 +723,7 @@ export function ChatContainer({
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <button type="button" className="btn-primary" onClick={submitLead} disabled={busy}>
+                  {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                   {busy ? "Wird gesendet …" : "An die Kanzlei übermitteln"}
                 </button>
                 <button

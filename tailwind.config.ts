@@ -9,6 +9,8 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
     "./lib/**/*.{ts,tsx}",
   ],
+  // Hover-Stile nur auf Geräten mit echtem Hover — sonst „kleben" sie nach dem Antippen
+  future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {
       colors: {
@@ -51,13 +53,13 @@ const config: Config = {
         "fade-up": { "0%": { opacity: "0", transform: "translateY(14px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
         "bubble-in": { "0%": { opacity: "0", transform: "translateY(8px) scale(0.98)" }, "100%": { opacity: "1", transform: "translateY(0) scale(1)" } },
         shake: { "0%,100%": { transform: "translateX(0)" }, "20%,60%": { transform: "translateX(-6px)" }, "40%,80%": { transform: "translateX(6px)" } },
-        swing: { "0%,100%": { transform: "rotate(-2.5deg)" }, "50%": { transform: "rotate(2.5deg)" } },
-        float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
+        swing: { "0%,100%": { transform: "rotate(-1.5deg)" }, "50%": { transform: "rotate(1.5deg)" } },
+        typing: { "0%,60%,100%": { opacity: "0.3" }, "30%": { opacity: "1" } },
       },
       animation: {
         "fade-up": "fade-up 0.7s var(--ease-out) both",
         "bubble-in": "bubble-in 0.3s var(--ease-out) both",
-        float: "float 7s ease-in-out infinite",
+        typing: "typing 1.2s ease-in-out infinite",
         shake: "shake 0.45s ease-in-out",
         swing: "swing 6s ease-in-out infinite",
       },

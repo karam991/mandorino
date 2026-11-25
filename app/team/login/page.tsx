@@ -213,7 +213,7 @@ export default function TeamLoginPage() {
             <button
               type="submit"
               disabled={busy}
-              className="btn-primary group mt-1 !py-3.5 text-base transition-all hover:shadow-lift active:scale-[0.99]"
+              className="btn-primary group mt-1 !py-3.5 text-base"
             >
               {busy ? (
                 <>

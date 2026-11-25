@@ -435,7 +435,7 @@ export default function DashboardPage() {
                         <td className="px-4 py-3 text-right whitespace-nowrap">
                           <Link
                             href={`/team/lead/${l.id}`}
-                            className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-all group-hover:border-ink/40 group-hover:shadow-soft"
+                            className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-[border-color,box-shadow] group-hover:border-ink/40 group-hover:shadow-soft"
                           >
                             Öffnen <span className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true">→</span>
                           </Link>
@@ -488,7 +488,7 @@ function Kpi({
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      className={`card relative overflow-hidden p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)] ${
+      className={`card relative overflow-hidden p-5 text-left transition-[transform,box-shadow] duration-300 ease-out active:translate-y-0 hover:-translate-y-0.5 hover:shadow-lift focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)] ${
         active ? "ring-2 ring-[color:var(--brand-primary)]" : ""
       }`}
     >

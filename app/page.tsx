@@ -97,14 +97,14 @@ export default function HomePage() {
               <div className="animate-fade-up delay-3 mt-6 sm:mt-9 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/chat"
-                  className="btn !bg-[color:var(--brand-accent)] !text-[color:var(--brand-primary)] hover:brightness-110 shadow-glow !px-6 !py-3.5"
+                  className="btn-accent"
                 >
                   Anliegen schildern
                   <span aria-hidden="true">→</span>
                 </Link>
                 <Link
                   href="#bereiche"
-                  className="btn border border-white/25 text-white hover:bg-white/10 !px-6 !py-3.5"
+                  className="btn-on-dark"
                 >
                   Unsere Rechtsgebiete ansehen
                 </Link>
@@ -217,7 +217,7 @@ export default function HomePage() {
                 <Link
                   key={a.id}
                   href={`/chat?area=${encodeURIComponent(a.id)}`}
-                  className={`group card flex flex-col gap-3 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--brand-accent)] hover:shadow-lift ${areaSpan(i, areas.length)}`}
+                  className={`group card flex flex-col gap-3 p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-soft hover:border-[color:var(--brand-accent)] hover:shadow-lift ${areaSpan(i, areas.length)}`}
                 >
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-paper text-ink transition-colors group-hover:brand-bg group-hover:text-white">
                     <Icon id={a.id} />
@@ -326,7 +326,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/chat"
-                className="btn mt-8 !bg-[color:var(--brand-accent)] !text-[color:var(--brand-primary)] shadow-glow hover:brightness-110 !px-7 !py-3.5"
+                className="btn-accent mt-8"
               >
                 Anliegen schildern <span aria-hidden="true">→</span>
               </Link>
