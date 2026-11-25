@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { ChatBubble, TypingDots } from "@/components/ChatBubble";
+import { FirmAvatar } from "@/components/FirmAvatar";
 import { MultiChips, QuickReplyChips } from "@/components/QuickReplyChips";
 import { getPracticeArea } from "@/lib/areas/registry";
 import { ENTRY_STEP, getStep, type StepId } from "@/lib/chatFlow";
@@ -369,9 +370,7 @@ export function ChatContainer({
     <div className={wrapperClass}>
       <div className="flex items-center justify-between gap-3 px-1">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full brand-bg text-sm font-semibold text-white ring-2 ring-[color:var(--brand-accent)]/60">
-            M
-          </div>
+          <FirmAvatar />
           <div>
             <div className="text-sm font-semibold text-ink-dark">Geführtes Gespräch</div>
             <div className="flex items-center gap-1.5 text-xs text-muted">

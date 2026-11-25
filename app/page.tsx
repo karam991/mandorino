@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
+import { FirmAvatar } from "@/components/FirmAvatar";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Mandarin } from "@/components/Mandarin";
@@ -128,9 +129,7 @@ export default function HomePage() {
               )}
               <div className="surface-raised rounded-2xl p-5 text-ink-dark">
                 <div className="mb-4 flex items-center gap-3 border-b border-line pb-4">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full brand-bg text-sm font-bold text-white">
-                    {TENANT.brand.kanzleiName.charAt(0)}
-                  </div>
+                  <FirmAvatar />
                   <div>
                     <div className="text-sm font-semibold">Geführtes Gespräch</div>
                     <div className="text-xs text-muted">Schritt 2 von 6</div>

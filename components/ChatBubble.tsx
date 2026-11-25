@@ -1,3 +1,5 @@
+import { FirmAvatar } from "./FirmAvatar";
+
 interface ChatBubbleProps {
   sender: "bot" | "user";
   children: React.ReactNode;
@@ -22,9 +24,7 @@ export function ChatBubble({ sender, children }: ChatBubbleProps) {
   return (
     <div className={`flex ${isBot ? "justify-start" : "justify-end"} mb-3 animate-bubble-in`}>
       {isBot && (
-        <div className="mr-2 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full brand-bg text-xs font-semibold text-white ring-2 ring-[color:var(--brand-accent)]/60">
-          M
-        </div>
+        <FirmAvatar size="sm" className="mr-2 mt-1" />
       )}
       <div
         className={`max-w-[82%] sm:max-w-[72%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-soft
