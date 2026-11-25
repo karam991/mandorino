@@ -367,8 +367,8 @@ export function ChatContainer({
   return (
     <div className={wrapperClass}>
       <div className="flex items-center justify-between gap-3 px-1">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full brand-bg text-sm font-semibold text-white ring-2 ring-[color:var(--brand-accent)]/60">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full brand-bg text-sm font-semibold text-white ring-2 ring-[color:var(--brand-accent)]/60">
             M
           </div>
           <div>
@@ -379,14 +379,14 @@ export function ChatContainer({
             </div>
           </div>
         </div>
-        <ol className="flex items-center gap-1.5" aria-label="Fortschritt">
+        <ol className="flex shrink-0 items-center gap-1.5" aria-label="Fortschritt">
           {PHASES.map((label, i) => {
             const cur = phaseOf(stepId);
             const state = i < cur ? "done" : i === cur ? "current" : "todo";
             return (
               <li key={label} className="flex flex-col items-center gap-1" aria-current={state === "current" ? "step" : undefined}>
                 <span
-                  className={`h-1.5 w-8 rounded-full transition-all duration-500 sm:w-12 ${
+                  className={`h-1.5 w-5 rounded-full transition-all duration-500 min-[400px]:w-8 sm:w-12 ${
                     state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
                   } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
                 />

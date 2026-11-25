@@ -100,7 +100,7 @@ export default function TeamLoginPage() {
 
         {/* Vorschau-Karte (rein dekorativ, fiktive Daten) */}
         <div className="animate-fade-up delay-4 relative max-w-sm" aria-hidden="true">
-          <Mandarin className="pointer-events-none absolute -right-8 -top-20 z-10 h-40 w-36" />
+          <Mandarin className="pointer-events-none absolute -bottom-3 left-full z-10 -ml-10 h-32 w-28 xl:ml-0 xl:h-40 xl:w-36" />
           <div className="animate-float max-w-sm rounded-2xl border border-white/15 bg-white/[0.07] p-4 shadow-glow backdrop-blur">
             <div className="flex items-center justify-between text-xs text-white/60">
               <span>Neue Anfrage</span>

@@ -20,7 +20,7 @@ export function TeamNav() {
   return (
     <>
       {/* Desktop */}
-      <div className="hidden items-center gap-1 md:flex">
+      <div className="hidden items-center gap-1 lg:flex">
         {TEAM_LINKS.map(({ href, label, Icon }) => (
           <Link
             key={href}
@@ -44,7 +44,7 @@ export function TeamNav() {
       </div>
 
       {/* Mobil: natives <details>, kein JS nötig */}
-      <details className="relative md:hidden">
+      <details className="relative lg:hidden">
         <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 px-3 py-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
           <Menu className="h-4 w-4" aria-hidden />
           Menü

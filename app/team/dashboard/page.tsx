@@ -315,7 +315,7 @@ export default function DashboardPage() {
           ) : (
             <>
             {/* Mobil: Karten statt breiter Tabelle */}
-            <ul className="space-y-3 md:hidden">
+            <ul className="grid gap-3 md:grid-cols-2 lg:hidden">
               {filtered.map((l) => (
                 <li key={l.id} className="card p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -347,8 +347,8 @@ export default function DashboardPage() {
                 </li>
               ))}
             </ul>
-            {/* Ab md: Tabelle; ab xl etwas breiter als der Textblock, damit keine Spalte abgeschnitten wird */}
-            <div className="card hidden overflow-x-auto animate-fade-up delay-3 md:block xl:-mx-24">
+            {/* Ab lg: Tabelle; ab xl etwas breiter als der Textblock, damit keine Spalte abgeschnitten wird */}
+            <div className="card relative hidden overflow-x-auto animate-fade-up delay-3 lg:block xl:-mx-24">
               <table className="w-full text-sm">
                 <thead className="bg-paper text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                   <tr>

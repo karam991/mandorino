@@ -43,7 +43,7 @@ export function MultiChips({ options, selected, onToggle, disabled }: MultiChips
             disabled={disabled}
             onClick={() => onToggle(opt)}
             className={`chip disabled:opacity-50 disabled:cursor-not-allowed ${
-              isOn ? "bg-ink text-white border-ink" : ""
+              isOn ? "chip-selected" : ""
             }`}
             aria-pressed={isOn}
           >

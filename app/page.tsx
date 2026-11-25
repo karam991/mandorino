@@ -117,7 +117,7 @@ export default function HomePage() {
             {/* Illustration: Vorschau des geführten Gesprächs (rein dekorativ) */}
             <div className="animate-fade-up delay-3 relative hidden lg:block" aria-hidden="true">
               {TENANT.brand.mascot !== false && (
-                <Mandarin className="pointer-events-none absolute -top-24 -right-12 z-10 h-60 w-56" />
+                <Mandarin className="pointer-events-none absolute -top-36 -right-6 z-10 h-40 w-36" />
               )}
               <div className="animate-float rounded-2xl border border-white/15 bg-white/[0.07] p-5 shadow-glow backdrop-blur">
                 <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
