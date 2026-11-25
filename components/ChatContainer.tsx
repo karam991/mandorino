@@ -359,66 +359,70 @@ export function ChatContainer({
   const wrapperClass =
     variant === "embed"
       ? "flex flex-col gap-3 p-3 sm:p-4 h-full"
-      : "mx-auto max-w-2xl px-4 sm:px-6 py-6 flex flex-col gap-4 min-h-[calc(100dvh-200px)]";
+      : "mx-auto max-w-2xl px-4 sm:px-6 py-4 sm:py-5 flex flex-col gap-3";
 
   const scrollClass =
     variant === "embed"
-      ? "card bg-paper-dark/40 border-line p-3 sm:p-4 flex-1 overflow-y-auto min-h-[240px]"
-      : "card bg-paper-dark/40 border-line p-4 sm:p-5 flex-1 overflow-y-auto max-h-[60dvh] min-h-[300px]";
+      ? "bg-paper/70 p-3 sm:p-4 flex-1 overflow-y-auto min-h-[240px] focus-visible:-outline-offset-2"
+      : // Höhe so gewählt, dass das Eingabefeld ohne Scrollen sichtbar bleibt
+        "bg-paper/70 p-4 sm:p-5 overflow-y-auto h-[clamp(11rem,calc(100dvh-35rem),28rem)] sm:h-[clamp(14rem,calc(100dvh-30rem),28rem)] focus-visible:-outline-offset-2";
 
   return (
     <div className={wrapperClass}>
-      <div className="flex items-center justify-between gap-3 px-1">
-        <div className="flex min-w-0 items-center gap-3">
-          <FirmAvatar />
-          <div>
-            <div className="text-sm font-semibold text-ink-dark">Geführtes Gespräch</div>
-            <div className="flex items-center gap-1.5 text-xs text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden="true" />
-              Vertraulich · Keine Rechtsberatung
+      {/* Ein Panel: Kopf, Verlauf und Eingabe nur durch Linien getrennt */}
+      <div className={`card flex flex-col overflow-hidden ${variant === "embed" ? "flex-1" : ""}`}>
+        <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <FirmAvatar />
+            <div>
+              <div className="text-sm font-semibold text-ink-dark">Geführtes Gespräch</div>
+              <div className="flex items-center gap-1.5 text-xs text-muted">
+                <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden="true" />
+                Vertraulich · Keine Rechtsberatung
+              </div>
             </div>
           </div>
+          <ol className="flex shrink-0 items-center gap-1.5" aria-label="Fortschritt">
+            {PHASES.map((label, i) => {
+              const cur = phaseOf(stepId);
+              const state = i < cur ? "done" : i === cur ? "current" : "todo";
+              return (
+                <li key={label} className="flex flex-col items-center gap-1" aria-current={state === "current" ? "step" : undefined}>
+                  <span
+                    className={`h-1.5 w-5 rounded-full transition-[background-color,opacity] duration-500 min-[400px]:w-8 sm:w-12 ${
+                      state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
+                    } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
+                  />
+                  <span className={`sr-only text-xs sm:not-sr-only ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
+                    {label}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
         </div>
-        <ol className="flex shrink-0 items-center gap-1.5" aria-label="Fortschritt">
-          {PHASES.map((label, i) => {
-            const cur = phaseOf(stepId);
-            const state = i < cur ? "done" : i === cur ? "current" : "todo";
-            return (
-              <li key={label} className="flex flex-col items-center gap-1" aria-current={state === "current" ? "step" : undefined}>
-                <span
-                  className={`h-1.5 w-5 rounded-full transition-[background-color,opacity] duration-500 min-[400px]:w-8 sm:w-12 ${
-                    state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
-                  } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
-                />
-                <span className={`sr-only text-xs sm:not-sr-only ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
-                  {label}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
-      <div ref={scrollRef} className={scrollClass} role="log" aria-live="polite" aria-label="Chatverlauf" tabIndex={0}>
-        {messages.map((m) => (
-          <ChatBubble key={m.id} sender={m.sender}>
-            {m.text}
-          </ChatBubble>
-        ))}
-        {busy && stepId === "summary" && (
-          <ChatBubble sender="bot">
-            Einen Moment — ich fasse Ihre Angaben zusammen…
-            <TypingDots />
-          </ChatBubble>
-        )}
-      </div>
+        <div ref={scrollRef} className={scrollClass} role="log" aria-live="polite" aria-label="Chatverlauf" tabIndex={0}>
+          {messages.map((m) => (
+            <ChatBubble key={m.id} sender={m.sender}>
+              {m.text}
+            </ChatBubble>
+          ))}
+          {busy && stepId === "summary" && (
+            <ChatBubble sender="bot">
+              Einen Moment — ich fasse Ihre Angaben zusammen…
+              <TypingDots />
+            </ChatBubble>
+          )}
+        </div>
 
-      <div className="card p-4 sm:p-5">
-        {step ? renderInput() : <p className="text-sm text-muted">Unbekannter Schritt.</p>}
-        {error && (
-          <p role="alert" className="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-2">
-            {error}
-          </p>
-        )}
+        <div className="border-t border-line p-4 sm:p-5">
+          {step ? renderInput() : <p className="text-sm text-muted">Unbekannter Schritt.</p>}
+          {error && (
+            <p role="alert" className="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-2">
+              {error}
+            </p>
+          )}
+        </div>
       </div>
 
       {stepId !== "done" && (
