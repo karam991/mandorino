@@ -391,7 +391,7 @@ export function ChatContainer({
                     state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
                   } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
                 />
-                <span className={`hidden text-xs sm:block ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
+                <span className={`sr-only text-xs sm:not-sr-only ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
                   {label}
                 </span>
               </li>
@@ -399,7 +399,7 @@ export function ChatContainer({
           })}
         </ol>
       </div>
-      <div ref={scrollRef} className={scrollClass} role="log" aria-live="polite" aria-label="Chatverlauf">
+      <div ref={scrollRef} className={scrollClass} role="log" aria-live="polite" aria-label="Chatverlauf" tabIndex={0}>
         {messages.map((m) => (
           <ChatBubble key={m.id} sender={m.sender}>
             {m.text}
@@ -416,7 +416,7 @@ export function ChatContainer({
       <div className="card p-4 sm:p-5">
         {step ? renderInput() : <p className="text-sm text-muted">Unbekannter Schritt.</p>}
         {error && (
-          <p className="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-2">
+          <p role="alert" className="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-2">
             {error}
           </p>
         )}
@@ -525,6 +525,7 @@ export function ChatContainer({
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="date"
+            aria-label="Datum"
             className="input flex-1"
             value={dateInput}
             onChange={(e) => setDateInput(e.target.value)}
@@ -549,6 +550,7 @@ export function ChatContainer({
             <textarea
               className="input min-h-[100px]"
               placeholder={it.placeholder}
+              aria-label={it.placeholder ?? "Ihre Antwort"}
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
             />
@@ -557,6 +559,7 @@ export function ChatContainer({
               type="text"
               className="input"
               placeholder={it.placeholder}
+              aria-label={it.placeholder ?? "Ihre Antwort"}
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
             />
@@ -601,6 +604,8 @@ export function ChatContainer({
             <input
               className="input sm:col-span-2"
               placeholder="Firmenname"
+              aria-label="Firmenname"
+              autoComplete="organization"
               value={contact.companyName}
               onChange={(e) => setContact({ ...contact, companyName: e.target.value })}
             />
@@ -608,12 +613,16 @@ export function ChatContainer({
           <input
             className="input"
             placeholder="Vorname"
+            aria-label="Vorname"
+            autoComplete="given-name"
             value={contact.firstName}
             onChange={(e) => setContact({ ...contact, firstName: e.target.value })}
           />
           <input
             className="input"
             placeholder="Nachname"
+            aria-label="Nachname"
+            autoComplete="family-name"
             value={contact.lastName}
             onChange={(e) => setContact({ ...contact, lastName: e.target.value })}
           />
@@ -622,12 +631,16 @@ export function ChatContainer({
               <input
                 className="input"
                 placeholder="Position im Unternehmen (optional)"
+                aria-label="Position im Unternehmen (optional)"
+                autoComplete="organization-title"
                 value={contact.contactPosition}
                 onChange={(e) => setContact({ ...contact, contactPosition: e.target.value })}
               />
               <input
                 className="input"
                 placeholder="USt-ID (optional)"
+                aria-label="USt-ID (optional)"
+                autoComplete="off"
                 value={contact.vatId}
                 onChange={(e) => setContact({ ...contact, vatId: e.target.value })}
               />
@@ -636,6 +649,8 @@ export function ChatContainer({
           <input
             className="input sm:col-span-2"
             placeholder="E-Mail"
+            aria-label="E-Mail"
+            autoComplete="email"
             type="email"
             value={contact.email}
             onChange={(e) => setContact({ ...contact, email: e.target.value })}
@@ -643,12 +658,18 @@ export function ChatContainer({
           <input
             className="input"
             placeholder="Telefon"
+            aria-label="Telefon"
+            type="tel"
+            autoComplete="tel"
             value={contact.phone}
             onChange={(e) => setContact({ ...contact, phone: e.target.value })}
           />
           <input
             className="input"
             placeholder="PLZ"
+            aria-label="PLZ"
+            inputMode="numeric"
+            autoComplete="postal-code"
             value={contact.postalCode}
             onChange={(e) => setContact({ ...contact, postalCode: e.target.value })}
           />
@@ -676,7 +697,7 @@ export function ChatContainer({
           <label className="flex items-start gap-3 text-sm text-ink-dark/90 leading-relaxed">
             <input
               type="checkbox"
-              className="mt-1"
+              className="mt-0.5 h-5 w-5 shrink-0 accent-ink"
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
             />

@@ -182,7 +182,7 @@ function Snippet({
           </button>
         </div>
       </div>
-      <pre className="bg-ink/95 text-paper rounded-md p-4 overflow-x-auto text-xs leading-relaxed">
+      <pre tabIndex={0} aria-label="Einbettungs-Code" className="bg-ink/95 text-paper rounded-md p-4 overflow-x-auto text-xs leading-relaxed">
         <code>{code}</code>
       </pre>
     </div>
