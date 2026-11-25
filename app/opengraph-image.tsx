@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
 import { TENANT } from "@/lib/tenant.config";
+import { brandTokens } from "./brandTokens";
 
 export const alt = `${TENANT.brand.kanzleiName} · Anliegen erfassen`;
 export const size = { width: 1200, height: 630 };
@@ -8,6 +9,8 @@ export const contentType = "image/png";
 
 /** Link-Vorschau (WhatsApp, LinkedIn, Slack …) — wird aus der Tenant-Config gebaut. */
 export default function OgImage() {
+  const tokens = brandTokens(TENANT.brand.primary, TENANT.brand.accent);
+  const deep = `rgb(${tokens["--ink-dark"].split(" ").join(",")})`;
   return new ImageResponse(
     (
       <div
@@ -18,7 +21,7 @@ export default function OgImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: `linear-gradient(135deg, ${TENANT.brand.primary} 0%, #0B1F3A 100%)`,
+          background: `linear-gradient(135deg, ${TENANT.brand.primary} 0%, ${deep} 100%)`,
           color: "white",
         }}
       >
@@ -36,7 +39,7 @@ export default function OgImage() {
           <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>
             Ihr Anliegen. In Ruhe geschildert.
           </div>
-          <div style={{ fontSize: 32, color: TENANT.brand.accent }}>
+          <div style={{ fontSize: 32, color: tokens["--accent-on-brand"] }}>
             Geführtes Erstgespräch · Persönliche Rückmeldung der Kanzlei
           </div>
         </div>

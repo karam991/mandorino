@@ -108,7 +108,7 @@ export default function TeamLoginPage() {
           <div className="animate-fade-up delay-3 max-w-md">
             <h2 className="font-serif text-4xl font-semibold leading-[1.1] !text-white">
               Jede Anfrage verdient{" "}
-              <span style={{ color: "var(--brand-accent)" }}>
+              <span style={{ color: "var(--accent-on-brand)" }}>
                 Ihre volle Aufmerksamkeit.
               </span>
             </h2>
@@ -124,7 +124,7 @@ export default function TeamLoginPage() {
           <div className="surface-raised max-w-sm rounded-2xl p-4 text-ink-dark">
             <div className="flex items-center justify-between text-xs text-muted">
               <span>Neue Anfrage</span>
-              <span className="rounded-full bg-[color:var(--brand-accent)] px-2 py-0.5 font-medium" style={{ color: "var(--brand-primary)" }}>
+              <span className="rounded-full bg-[color:var(--brand-accent)] px-2 py-0.5 font-medium" style={{ color: "var(--on-accent)" }}>
                 Hoch
               </span>
             </div>

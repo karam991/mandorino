@@ -81,7 +81,7 @@ export default function HomePage() {
               </span>
               <h1 className="animate-fade-up delay-1 mt-5 text-display font-semibold !text-white">
                 Sie haben ein rechtliches Problem.{" "}
-                <span style={{ color: "var(--brand-accent)" }}>
+                <span style={{ color: "var(--accent-on-brand)" }}>
                   Wir hören zu — und handeln.
                 </span>
               </h1>
@@ -112,7 +112,7 @@ export default function HomePage() {
               <ul className="animate-fade-up delay-4 order-2 mt-6 sm:order-none sm:mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
                 {["Vertraulich", "Unverbindlich", "Persönliche Rückmeldung"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
-                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--brand-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--accent-on-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="m4 10.5 4 4 8-9" />
                     </svg>
                     {t}
@@ -319,7 +319,7 @@ export default function HomePage() {
               <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
               <h2 className="text-title font-semibold !text-white">
                 Bereit, Ihr Anliegen{" "}
-                <span style={{ color: "var(--brand-accent)" }}>zu schildern?</span>
+                <span style={{ color: "var(--accent-on-brand)" }}>zu schildern?</span>
               </h2>
               <p className="mx-auto mt-3 max-w-md text-white/75">
                 Nehmen Sie sich die Zeit, die Sie brauchen. Wir hören zu.

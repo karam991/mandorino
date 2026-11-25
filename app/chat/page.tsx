@@ -21,7 +21,7 @@ export default function ChatPage() {
         <div className="mx-auto max-w-page px-4 py-6 sm:px-6 sm:py-12">
           <h1 className="animate-fade-up text-title font-semibold !text-white">
             Schildern Sie uns Ihr{" "}
-            <span style={{ color: "var(--brand-accent)" }}>
+            <span style={{ color: "var(--accent-on-brand)" }}>
               Anliegen.
             </span>
           </h1>
@@ -31,7 +31,7 @@ export default function ChatPage() {
           <ul className="animate-fade-up delay-2 mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
             {["Vertraulich", "Unverbindlich", "Rückmeldung durch die Kanzlei"].map((t) => (
               <li key={t} className="flex items-center gap-2">
-                <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--brand-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="var(--accent-on-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="m4 10.5 4 4 8-9" />
                 </svg>
                 {t}
