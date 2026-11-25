@@ -17,12 +17,12 @@ export function DisclaimerBanner({ variant = "subtle" }: DisclaimerBannerProps) 
   }
   return (
     <aside aria-label="Hinweis zur Rechtsberatung" className="bg-paper-dark border-b border-line">
-      <div className="mx-auto flex max-w-page items-center justify-center gap-2 px-4 py-2.5 text-xs text-muted sm:px-6 sm:text-sm">
+      <div className="mx-auto flex max-w-page items-start justify-center gap-2 px-4 py-2 text-xs leading-snug text-muted sm:items-center sm:px-6 sm:py-2.5 sm:text-sm">
         <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-gold-dark" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M10 2.5 4 5v4.5c0 3.6 2.5 6.3 6 8 3.5-1.7 6-4.4 6-8V5l-6-2.5Z" />
           <path d="m7.5 10 2 2 3.5-4" />
         </svg>
-        <span className="text-center">{DISCLAIMER.shortBanner}</span>
+        <span className="sm:text-center">{DISCLAIMER.shortBanner}</span>
       </div>
     </aside>
   );

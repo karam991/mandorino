@@ -358,12 +358,12 @@ export function ChatContainer({
   const wrapperClass =
     variant === "embed"
       ? "flex flex-col gap-3 p-3 sm:p-4 h-full"
-      : "mx-auto max-w-2xl px-4 sm:px-6 py-6 flex flex-col gap-4 min-h-[calc(100vh-200px)]";
+      : "mx-auto max-w-2xl px-4 sm:px-6 py-6 flex flex-col gap-4 min-h-[calc(100dvh-200px)]";
 
   const scrollClass =
     variant === "embed"
       ? "card bg-paper-dark/40 border-line p-3 sm:p-4 flex-1 overflow-y-auto min-h-[240px]"
-      : "card bg-paper-dark/40 border-line p-4 sm:p-5 flex-1 overflow-y-auto max-h-[60vh] min-h-[300px]";
+      : "card bg-paper-dark/40 border-line p-4 sm:p-5 flex-1 overflow-y-auto max-h-[60dvh] min-h-[300px]";
 
   return (
     <div className={wrapperClass}>
@@ -441,7 +441,7 @@ export function ChatContainer({
             <button
               type="button"
               onClick={handleAdviceQuestion}
-              className="btn-quiet"
+              className="btn-quiet max-sm:rounded-2xl max-sm:text-left"
             >
               Ich brauche eine rechtliche Einschätzung — was ist hier möglich?
             </button>
@@ -449,7 +449,7 @@ export function ChatContainer({
           <button
             type="button"
             onClick={handleLeave}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-red-50 hover:text-red-700 active:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+            className="ml-auto inline-flex items-center gap-1.5 touch-target rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-red-50 hover:text-red-700 active:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
           >
             Chat verlassen
           </button>

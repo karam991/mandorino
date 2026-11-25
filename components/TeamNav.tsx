@@ -45,7 +45,7 @@ export function TeamNav() {
 
       {/* Mobil: natives <details>, kein JS nötig */}
       <details className="relative lg:hidden">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 px-3 py-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+        <summary className="touch-target inline-flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 px-3 py-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
           <Menu className="h-4 w-4" aria-hidden />
           Menü
         </summary>
@@ -55,7 +55,7 @@ export function TeamNav() {
               key={href}
               href={href}
               aria-current={isActive(href) ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-paper ${
+              className={`touch-target flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-paper ${
                 isActive(href) ? "bg-paper font-medium" : ""
               }`}
             >

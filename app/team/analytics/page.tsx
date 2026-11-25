@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
               <div className="flex flex-col gap-2">
                 {stats.areaRows.map(([label, count]) => (
                   <div key={label} className="flex items-center gap-3">
-                    <div className="w-40 text-sm text-ink-dark truncate">{label}</div>
+                    <div className="w-28 truncate text-sm text-ink-dark sm:w-40">{label}</div>
                     <div className="flex-1 bg-paper-dark h-3 rounded-full overflow-hidden">
                       <div
                         className="brand-bg h-full rounded-full transition-[width] duration-700 ease-out"

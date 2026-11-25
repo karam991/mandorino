@@ -32,15 +32,15 @@ export function Logo({ variant = "default", size = "md", hideTagline = false }: 
   }
 
   return (
-    <Link href="/" className="inline-flex flex-col gap-0.5">
+    <Link href="/" className="inline-flex min-w-0 flex-col justify-center gap-0.5 touch-target">
       <span
-        className={`font-semibold tracking-tight ${textColor} ${big ? "text-xl" : "text-base"}`}
+        className={`font-semibold tracking-tight ${textColor} ${big ? "text-lg sm:text-xl" : "text-base"}`}
       >
         {TENANT.brand.kanzleiName}
       </span>
       {!hideTagline && (
         <span
-          className={`text-xs leading-snug ${subColor}`}
+          className={`text-xs leading-tight text-balance sm:leading-snug ${subColor}`}
         >
           {TENANT.brand.tagline}
         </span>

@@ -143,7 +143,7 @@ export default function TeamLoginPage() {
 
       {/* ---- Rechte Seite: Login ---- */}
       <section className="relative flex flex-col justify-center px-6 py-12 sm:px-12">
-        <Link href="/" className="absolute left-6 top-6 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-ink-dark sm:left-12">
+        <Link href="/" className="touch-target absolute left-6 top-3 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-ink-dark sm:left-12">
           <span aria-hidden="true">←</span> Zur Website
         </Link>
 
@@ -195,7 +195,7 @@ export default function TeamLoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded px-1.5 py-1 text-xs font-medium text-muted hover:text-ink-dark"
+                  className="touch-target absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-muted hover:text-ink-dark"
                   aria-label={showPw ? "Passwort verbergen" : "Passwort anzeigen"}
                   aria-pressed={showPw}
                 >

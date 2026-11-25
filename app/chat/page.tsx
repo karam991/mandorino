@@ -18,7 +18,7 @@ export default function ChatPage() {
       <main id="main" className="flex-1">
       <section className="relative isolate overflow-hidden brand-bg text-white">
         <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
-        <div className="mx-auto max-w-page px-4 py-9 sm:px-6 sm:py-12">
+        <div className="mx-auto max-w-page px-4 py-6 sm:px-6 sm:py-12">
           <h1 className="animate-fade-up text-title font-semibold !text-white">
             Schildern Sie uns Ihr{" "}
             <span style={{ color: "var(--brand-accent)" }}>

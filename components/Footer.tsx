@@ -11,10 +11,10 @@ export function Footer() {
           </div>
         </div>
         <div className="flex items-center gap-5">
-          <a href={TENANT.legal.impressumUrl} className="transition-colors hover:text-white">
+          <a href={TENANT.legal.impressumUrl} className="touch-target inline-flex items-center transition-colors hover:text-white">
             Impressum
           </a>
-          <a href={TENANT.legal.datenschutzUrl} className="transition-colors hover:text-white">
+          <a href={TENANT.legal.datenschutzUrl} className="touch-target inline-flex items-center transition-colors hover:text-white">
             Datenschutz
           </a>
           <span className="hidden text-xs text-white/70 sm:inline">

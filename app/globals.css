@@ -22,6 +22,9 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
+  html, body {
+    overflow-x: clip;
+  }
 
   body {
     @apply bg-paper text-ink-dark;
@@ -185,6 +188,12 @@
 }
 
 @layer utilities {
+  /* Handy und Touch: Bedienelemente mindestens 44px hoch */
+  @media (max-width: 767px), (pointer: coarse) {
+    .btn, .btn-primary, .btn-secondary, .btn-accent, .btn-on-dark, .btn-quiet, .chip, .input, .touch-target {
+      min-height: 44px;
+    }
+  }
   .delay-1 { animation-delay: 0.1s; }
   .delay-2 { animation-delay: 0.2s; }
   .delay-3 { animation-delay: 0.3s; }
