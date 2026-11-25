@@ -80,7 +80,7 @@ export default function TeamLoginPage() {
         />
         <div className="animate-fade-up">
           <div className="text-xl font-semibold tracking-tight">{TENANT.brand.kanzleiName}</div>
-          <div className="mt-0.5 text-[10px] uppercase tracking-widest text-white/60">{TENANT.brand.tagline}</div>
+          <div className="mt-0.5 text-xs text-white/60">{TENANT.brand.tagline}</div>
         </div>
 
         <div className="flex flex-col items-start gap-8">
@@ -88,7 +88,7 @@ export default function TeamLoginPage() {
           <div className="animate-fade-up delay-3 max-w-md">
             <h2 className="font-serif text-4xl font-semibold leading-[1.1] !text-white">
               Jede Anfrage verdient{" "}
-              <span className="italic" style={{ color: "var(--brand-accent)" }}>
+              <span style={{ color: "var(--brand-accent)" }}>
                 Ihre volle Aufmerksamkeit.
               </span>
             </h2>
@@ -112,7 +112,7 @@ export default function TeamLoginPage() {
             <div className="mt-1 text-xs text-white/65">Kündigung erhalten · Rückmeldung innerhalb 24 Std.</div>
             <div className="mt-3 flex gap-2">
               {["Neu", "In Bearbeitung"].map((t, i) => (
-                <span key={t} className={`rounded-full px-2.5 py-1 text-[11px] ${i === 0 ? "bg-white/90 text-ink-dark" : "border border-white/25 text-white/80"}`}>
+                <span key={t} className={`rounded-full px-2.5 py-1 text-xs ${i === 0 ? "bg-white/90 text-ink-dark" : "border border-white/25 text-white/80"}`}>
                   {t}
                 </span>
               ))}

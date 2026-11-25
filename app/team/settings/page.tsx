@@ -145,7 +145,7 @@ export default function SettingsPage() {
           )}
 
           <div className="card p-6">
-            <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-4">
+            <h2 className="text-base font-semibold text-ink-dark mb-4">
               Verfügbare Rechtsgebiete
             </h2>
             <ul className="grid sm:grid-cols-2 gap-3">

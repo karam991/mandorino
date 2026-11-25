@@ -104,7 +104,7 @@ export default function AuskunftPage() {
 
         {/* Briefkopf */}
         <header className="border-b border-line pb-4 mb-6">
-          <div className="text-xs uppercase tracking-wider text-muted">
+          <div className="text-xs text-muted">
             {TENANT.brand.kanzleiName}
           </div>
           <h1 className="text-2xl font-bold mt-2 leading-tight">

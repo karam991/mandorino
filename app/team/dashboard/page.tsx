@@ -155,7 +155,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-7 animate-fade-up">
             <div>
               <span className="pill bg-ink/10 text-ink-dark mb-2">Lead-Übersicht</span>
-              <h1 className="text-3xl sm:text-4xl font-semibold">Eingegangene Anfragen</h1>
+              <h1 className="text-title font-semibold">Eingegangene Anfragen</h1>
               <p className="text-sm text-muted mt-1">
                 Angemeldet als {user.name} ({user.role}) · {TENANT.brand.kanzleiName}
               </p>
@@ -350,7 +350,7 @@ export default function DashboardPage() {
             {/* Ab lg: Tabelle; ab xl etwas breiter als der Textblock, damit keine Spalte abgeschnitten wird */}
             <div className="card relative hidden overflow-x-auto animate-fade-up delay-3 lg:block xl:-mx-24">
               <table className="w-full text-sm">
-                <thead className="bg-paper text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
+                <thead className="bg-paper text-left text-xs font-semibold text-muted">
                   <tr>
                     <th className="px-4 py-3">Eingang</th>
                     <th className="px-4 py-3">Mandant</th>
@@ -382,7 +382,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full brand-bg text-[10px] font-semibold text-white" aria-hidden="true">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full brand-bg text-xs font-semibold text-white" aria-hidden="true">
                               {(l.contact.firstName?.[0] ?? "") + (l.contact.lastName?.[0] ?? "")}
                             </span>
                             <span className="font-medium text-ink-dark">
@@ -390,7 +390,7 @@ export default function DashboardPage() {
                             </span>
                             {l.clientType === "business" && (
                               <span
-                                className="pill bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px]"
+                                className="pill bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs"
                                 title="Anfrage im Auftrag eines Unternehmens / Selbstständig"
                               >
                                 B2B
@@ -492,7 +492,7 @@ function Kpi({
       }`}
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[color:var(--brand-accent)] to-transparent" aria-hidden="true" />
-      <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+      <div className="text-xs font-medium text-muted">{label}</div>
       <div className="mt-2 font-serif text-4xl font-semibold tabular-nums text-ink-dark">{shown}</div>
     </button>
   );

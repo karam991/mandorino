@@ -40,7 +40,7 @@ export function Logo({ variant = "default", size = "md", hideTagline = false }: 
       </span>
       {!hideTagline && (
         <span
-          className={`uppercase tracking-widest ${subColor} ${big ? "text-[10px]" : "text-[9px]"}`}
+          className={`text-xs leading-snug ${subColor}`}
         >
           {TENANT.brand.tagline}
         </span>

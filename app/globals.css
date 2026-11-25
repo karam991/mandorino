@@ -38,6 +38,16 @@
   h1, h2 {
     @apply font-serif;
     letter-spacing: -0.02em;
+    font-optical-sizing: auto;
+  }
+  /* Ruhiger Umbruch; lange deutsche Komposita dürfen notfalls brechen */
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+  p, li {
+    text-wrap: pretty;
   }
   ::selection {
     background: rgb(var(--gold) / 0.35);

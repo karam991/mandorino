@@ -24,9 +24,9 @@ export default function ChatPage() {
           aria-hidden="true"
         />
         <div className="mx-auto max-w-page px-4 py-9 sm:px-6 sm:py-12">
-          <h1 className="animate-fade-up text-3xl font-semibold sm:text-4xl !text-white">
+          <h1 className="animate-fade-up text-title font-semibold !text-white">
             Schildern Sie uns Ihr{" "}
-            <span className="italic" style={{ color: "var(--brand-accent)" }}>
+            <span style={{ color: "var(--brand-accent)" }}>
               Anliegen.
             </span>
           </h1>

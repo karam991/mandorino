@@ -390,7 +390,7 @@ export function ChatContainer({
                     state === "todo" ? "bg-line" : "bg-[color:var(--brand-accent)]"
                   } ${state === "current" ? "opacity-100" : state === "done" ? "opacity-70" : ""}`}
                 />
-                <span className={`hidden text-[10px] sm:block ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
+                <span className={`hidden text-xs sm:block ${state === "current" ? "font-semibold text-ink-dark" : "text-muted"}`}>
                   {label}
                 </span>
               </li>

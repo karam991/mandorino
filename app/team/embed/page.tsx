@@ -101,7 +101,7 @@ export default function EmbedSetupPage() {
           />
 
           <div className="card p-6 bg-paper-dark/40 border-dashed mt-6">
-            <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-2">
+            <h2 className="text-base font-semibold text-ink-dark mb-2">
               Hinweise zur Einbindung
             </h2>
             <ul className="text-sm text-ink-dark/90 space-y-1 list-disc pl-5">

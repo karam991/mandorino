@@ -101,7 +101,7 @@ export default function AnalyticsPage() {
 
           {/* Verteilung pro Rechtsgebiet */}
           <div className="card p-6 mb-6">
-            <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-4">
+            <h2 className="text-base font-semibold text-ink-dark mb-4">
               Leads pro Rechtsgebiet
             </h2>
             {stats.areaRows.length === 0 ? (
@@ -156,11 +156,11 @@ function Kpi({
         aria-hidden="true"
       />
       <div className="flex items-center justify-between gap-2">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+        <div className="text-xs font-medium text-muted">{label}</div>
         <Icon className="h-4 w-4 shrink-0 text-muted" aria-hidden />
       </div>
       <div className="mt-2 font-serif text-4xl font-semibold tabular-nums text-ink-dark">{value}</div>
-      {hint && <div className="mt-1 text-[11px] leading-snug text-muted">{hint}</div>}
+      {hint && <div className="mt-1 text-xs leading-snug text-muted">{hint}</div>}
     </div>
   );
 }

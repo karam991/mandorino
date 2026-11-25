@@ -67,6 +67,11 @@ const config: Config = {
         soft: "0 1px 3px rgb(var(--ink-dark) / 0.06), 0 1px 2px rgb(var(--ink-dark) / 0.04)",
         card: "0 4px 16px rgb(var(--ink-dark) / 0.08)",
       },
+      fontSize: {
+        // Fließende Überschriften: klein genug für 320px, gedeckelt auf Desktop
+        display: ["clamp(2rem, 1.2rem + 3.6vw, 3.75rem)", { lineHeight: "1.08" }],
+        title: ["clamp(1.75rem, 1.35rem + 1.7vw, 2.5rem)", { lineHeight: "1.15" }],
+      },
       transitionTimingFunction: {
         out: "var(--ease-out)",
       },

@@ -191,7 +191,7 @@ export default function LeadDetailPage() {
 
                 {/* Kontakt */}
                 <div className="border-t border-line mt-5 pt-4">
-                  <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                  <h2 className="text-base font-semibold text-ink-dark mb-3">
                     Kontakt
                   </h2>
                   <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -230,7 +230,7 @@ export default function LeadDetailPage() {
                 {/* KI-Zusammenfassung */}
                 {lead.aiSummary && (
                   <div className="border-t border-line mt-5 pt-4">
-                    <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-2">
+                    <h2 className="text-base font-semibold text-ink-dark mb-2">
                       Zusammenfassung
                     </h2>
                     <p className="text-sm text-ink-dark/95 leading-relaxed bg-paper-dark/50 border border-line rounded-md p-3 whitespace-pre-wrap">
@@ -250,7 +250,7 @@ export default function LeadDetailPage() {
 
                 {/* Sachdaten */}
                 <div className="border-t border-line mt-5 pt-4">
-                  <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                  <h2 className="text-base font-semibold text-ink-dark mb-3">
                     Mandantenangaben
                   </h2>
                   <AreaDataView data={lead.areaData} />
@@ -265,7 +265,7 @@ export default function LeadDetailPage() {
                 {/* Priorität-Signale */}
                 {lead.priority.signals.length > 0 && (
                   <div className="border-t border-line mt-5 pt-4">
-                    <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                    <h2 className="text-base font-semibold text-ink-dark mb-3">
                       Bearbeitungs-Priorität — Begründung
                     </h2>
                     <ul className="text-sm text-ink-dark/90 space-y-1">
@@ -285,7 +285,7 @@ export default function LeadDetailPage() {
 
               {/* Notizen + Historie */}
               <div className="card p-6">
-                <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                <h2 className="text-base font-semibold text-ink-dark mb-3">
                   Bearbeitungs-Notizen
                 </h2>
                 <div className="flex flex-col gap-2 mb-4">
@@ -305,7 +305,7 @@ export default function LeadDetailPage() {
                   </button>
                 </div>
 
-                <h3 className="text-xs uppercase tracking-wide text-muted mb-2">Historie</h3>
+                <h3 className="text-xs text-muted mb-2">Historie</h3>
                 <ul className="space-y-2">
                   {[...lead.history].reverse().map((h, i) => (
                     <li
@@ -325,7 +325,7 @@ export default function LeadDetailPage() {
             {/* Sidebar */}
             <aside className="flex flex-col gap-4">
               <div className="card p-5">
-                <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                <h2 className="text-base font-semibold text-ink-dark mb-3">
                   Status
                 </h2>
                 <div className="flex flex-col gap-2">
@@ -348,7 +348,7 @@ export default function LeadDetailPage() {
               </div>
 
               <div className="card p-5">
-                <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+                <h2 className="text-base font-semibold text-ink-dark mb-3">
                   Zuweisung
                 </h2>
                 <select
@@ -401,7 +401,7 @@ function DocumentsView({ data }: { data: Record<string, unknown> }) {
   if (!Array.isArray(docs) || docs.length === 0) {
     return (
       <div className="border-t border-line mt-5 pt-4">
-        <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-2">
+        <h2 className="text-base font-semibold text-ink-dark mb-2">
           Dokumente (nach Mandantenangabe)
         </h2>
         <p className="text-sm text-muted">
@@ -412,9 +412,9 @@ function DocumentsView({ data }: { data: Record<string, unknown> }) {
   }
   return (
     <div className="border-t border-line mt-5 pt-4">
-      <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-2 flex items-center gap-2">
+      <h2 className="text-base font-semibold text-ink-dark mb-2 flex items-center gap-2">
         Dokumente (nach Mandantenangabe)
-        <span className="pill bg-paper-dark text-ink-dark text-[10px]">
+        <span className="pill bg-paper-dark text-ink-dark text-xs">
           {docs.length}
         </span>
       </h2>
@@ -530,16 +530,16 @@ function CommercialFrameView({ lead }: { lead: Lead }) {
 
   return (
     <div className="border-t border-line mt-5 pt-4">
-      <h2 className="text-sm font-semibold text-ink-dark uppercase tracking-wide mb-3">
+      <h2 className="text-base font-semibold text-ink-dark mb-3">
         Wirtschaftlicher Rahmen
-        <span className="ml-2 text-[10px] uppercase tracking-wider text-muted font-normal">
+        <span className="ml-2 text-xs text-muted font-normal">
           Selbstauskunft Mandant
         </span>
       </h2>
       <div className="grid sm:grid-cols-2 gap-3">
         {lead.insurance && (
           <div className={`rounded-md border px-3 py-3 ${insClass}`}>
-            <div className="text-[10px] uppercase tracking-wider opacity-75">
+            <div className="text-xs opacity-75">
               Rechtsschutz-Versicherung
             </div>
             <div className="text-sm font-semibold mt-0.5">
@@ -554,7 +554,7 @@ function CommercialFrameView({ lead }: { lead: Lead }) {
         )}
         {lead.claimValue && (
           <div className="rounded-md border border-line bg-paper-dark/40 px-3 py-3">
-            <div className="text-[10px] uppercase tracking-wider text-muted">
+            <div className="text-xs text-muted">
               Streitwert / Sachwert (Mandantenschätzung)
             </div>
             <div className="text-sm font-semibold text-ink-dark mt-0.5">

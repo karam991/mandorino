@@ -68,13 +68,13 @@ export default function HomePage() {
           />
           <div className="mx-auto max-w-page px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
             <div>
-              <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium tracking-wide text-white/90">
+              <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full brand-accent-bg" aria-hidden="true" />
                 {TENANT.brand.kanzleiName}
               </span>
-              <h1 className="animate-fade-up delay-1 mt-5 text-4xl sm:text-6xl font-semibold leading-[1.05] !text-white">
+              <h1 className="animate-fade-up delay-1 mt-5 text-display font-semibold !text-white">
                 Sie haben ein rechtliches Problem.{" "}
-                <span className="italic" style={{ color: "var(--brand-accent)" }}>
+                <span style={{ color: "var(--brand-accent)" }}>
                   Wir hören zu — und handeln.
                 </span>
               </h1>
@@ -155,8 +155,8 @@ export default function HomePage() {
         {/* ---- SO FUNKTIONIERT ES ---- */}
         <section className="mx-auto max-w-page px-4 sm:px-6 py-20">
           <div className="max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] brand-text">In 3 Schritten</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-semibold">So funktioniert es</h2>
+            <span className="text-sm font-semibold brand-text">In 3 Schritten</span>
+            <h2 className="mt-3 text-title font-semibold">So funktioniert es</h2>
             <p className="mt-3 text-muted leading-relaxed">
               Damit Sie wissen, was Sie erwartet — kein Verkaufsgespräch, keine
               versteckten Kosten, keine Verpflichtung.
@@ -198,8 +198,8 @@ export default function HomePage() {
         <section id="bereiche" className="scroll-mt-20 border-t border-line bg-white">
           <div className="mx-auto max-w-page px-4 sm:px-6 py-20">
             <div className="max-w-2xl mb-12">
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] brand-text">Unsere Schwerpunkte</span>
-              <h2 className="mt-3 text-3xl sm:text-4xl font-semibold">In welchem Bereich können wir helfen?</h2>
+              <span className="text-sm font-semibold brand-text">Unsere Schwerpunkte</span>
+              <h2 className="mt-3 text-title font-semibold">In welchem Bereich können wir helfen?</h2>
               <p className="mt-3 text-muted leading-relaxed">
                 Wählen Sie Ihr Rechtsgebiet — wir starten direkt mit den passenden Fragen.
               </p>
@@ -267,8 +267,8 @@ export default function HomePage() {
         {/* ---- FAQ ---- */}
         <section className="mx-auto max-w-3xl px-4 sm:px-6 pb-20">
           <Reveal>
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] brand-text">Häufige Fragen</span>
-            <h2 className="mt-3 mb-8 text-3xl sm:text-4xl font-semibold">Gut zu wissen</h2>
+            <span className="text-sm font-semibold brand-text">Häufige Fragen</span>
+            <h2 className="mt-3 mb-8 text-title font-semibold">Gut zu wissen</h2>
             <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-soft">
               {[
                 {
@@ -312,9 +312,9 @@ export default function HomePage() {
                 style={{ background: "radial-gradient(circle, var(--brand-accent), transparent 65%)" }}
                 aria-hidden="true"
               />
-              <h2 className="text-3xl font-semibold sm:text-4xl !text-white">
+              <h2 className="text-title font-semibold !text-white">
                 Bereit, Ihr Anliegen{" "}
-                <span className="italic" style={{ color: "var(--brand-accent)" }}>zu schildern?</span>
+                <span style={{ color: "var(--brand-accent)" }}>zu schildern?</span>
               </h2>
               <p className="mx-auto mt-3 max-w-md text-white/75">
                 Nehmen Sie sich die Zeit, die Sie brauchen. Wir hören zu.

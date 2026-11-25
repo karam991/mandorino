@@ -18,7 +18,7 @@ export function Header({ variant = "client" }: HeaderProps) {
         <div className="flex items-center gap-3">
           <Logo variant="white" hideTagline={variant === "team"} />
           {variant === "team" && (
-            <span className="hidden lg:inline-flex whitespace-nowrap items-center gap-1 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-white/15 text-white/90 border border-white/20">
+            <span className="hidden lg:inline-flex whitespace-nowrap items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-white/15 text-white/90 border border-white/20">
               Mandorino · Team
             </span>
           )}

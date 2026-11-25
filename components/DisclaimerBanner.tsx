@@ -9,7 +9,7 @@ export function DisclaimerBanner({ variant = "subtle" }: DisclaimerBannerProps) 
     return (
       <div className="card bg-paper-dark border-line p-4 flex gap-3 items-start">
         <span className="pill bg-ink/10 text-ink-dark mt-0.5">Hinweis</span>
-        <p className="text-sm text-ink-dark/90 leading-relaxed">
+        <p className="max-w-[70ch] text-sm text-ink-dark/90 leading-relaxed">
           {DISCLAIMER.fullText}
         </p>
       </div>

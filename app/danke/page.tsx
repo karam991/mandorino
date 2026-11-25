@@ -44,7 +44,7 @@ export default function DankePage() {
                 </svg>
               </div>
             )}
-            <h1 className="animate-fade-up delay-1 relative text-3xl font-semibold sm:text-4xl">
+            <h1 className="animate-fade-up delay-1 relative text-title font-semibold">
               Vielen Dank — Ihre Anfrage ist bei uns eingegangen.
             </h1>
             <p className="animate-fade-up delay-2 relative mx-auto mt-4 max-w-md leading-relaxed text-muted">
