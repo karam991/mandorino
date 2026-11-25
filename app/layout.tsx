@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 
 import { TENANT } from "@/lib/tenant.config";
+import { brandTokens } from "./brandTokens";
 import "./globals.css";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -25,10 +26,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const brandStyle = {
-    "--brand-primary": TENANT.brand.primary,
-    "--brand-accent": TENANT.brand.accent,
-  } as React.CSSProperties;
+  const brandStyle = brandTokens(TENANT.brand.primary, TENANT.brand.accent) as React.CSSProperties;
 
   return (
     <html lang="de" style={brandStyle} className={`${sans.variable} ${serif.variable}`}>

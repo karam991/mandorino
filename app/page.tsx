@@ -31,7 +31,7 @@ function Check({ ok }: { ok: boolean }) {
   return (
     <span
       className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-        ok ? "bg-success/12 text-success" : "bg-danger/10 text-danger"
+        ok ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
       }`}
       aria-hidden="true"
     >

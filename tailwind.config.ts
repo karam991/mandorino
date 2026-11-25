@@ -13,14 +13,15 @@ const config: Config = {
     extend: {
       colors: {
         // Mandorino-Brand: tiefes Marineblau, dezentes Gold, warmes Off-White
+        // ink/gold kommen aus tenant.config (siehe app/brandTokens.ts)
         ink: {
-          DEFAULT: "#13315C",
-          dark: "#0B1F3A",
-          light: "#1F4A7E",
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          dark: "rgb(var(--ink-dark) / <alpha-value>)",
+          light: "rgb(var(--ink-light) / <alpha-value>)",
         },
         gold: {
-          DEFAULT: "#C9A86A",
-          dark: "#A88A4F",
+          DEFAULT: "rgb(var(--gold) / <alpha-value>)",
+          dark: "rgb(var(--gold-dark) / <alpha-value>)",
         },
         paper: {
           DEFAULT: "#F7F5F1",
@@ -54,17 +55,20 @@ const config: Config = {
         float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
       },
       animation: {
-        "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
-        "bubble-in": "bubble-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-up": "fade-up 0.7s var(--ease-out) both",
+        "bubble-in": "bubble-in 0.3s var(--ease-out) both",
         float: "float 7s ease-in-out infinite",
         shake: "shake 0.45s ease-in-out",
         swing: "swing 6s ease-in-out infinite",
       },
       boxShadow: {
-        lift: "0 12px 32px rgba(11, 31, 58, 0.14)",
+        lift: "0 2px 4px rgb(var(--ink-dark) / 0.06), 0 12px 32px rgb(var(--ink-dark) / 0.14)",
         glow: "0 30px 80px rgba(0, 0, 0, 0.35)",
-        soft: "0 1px 3px rgba(11, 31, 58, 0.06), 0 1px 2px rgba(11, 31, 58, 0.04)",
-        card: "0 4px 16px rgba(11, 31, 58, 0.08)",
+        soft: "0 1px 3px rgb(var(--ink-dark) / 0.06), 0 1px 2px rgb(var(--ink-dark) / 0.04)",
+        card: "0 4px 16px rgb(var(--ink-dark) / 0.08)",
+      },
+      transitionTimingFunction: {
+        out: "var(--ease-out)",
       },
       maxWidth: {
         page: "1100px",

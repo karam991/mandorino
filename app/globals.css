@@ -4,9 +4,17 @@
 
 @layer base {
   :root {
-    /* Tenant-Brand-Variablen — werden vom Layout aus tenant.config überschrieben. */
+    /* Tenant-Brand-Variablen — werden vom Layout aus tenant.config überschrieben
+       (app/brandTokens.ts). Die Werte hier sind nur der Fallback. */
     --brand-primary: #13315C;
     --brand-accent: #C9A86A;
+    --ink: 19 49 92;
+    --ink-dark: 12 30 57;
+    --ink-light: 33 61 102;
+    --gold: 201 168 106;
+    --gold-dark: 165 138 87;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html {
@@ -18,8 +26,8 @@
   body {
     @apply bg-paper text-ink-dark;
     background-image:
-      radial-gradient(1100px 480px at 88% -8%, rgba(201, 168, 106, 0.12), transparent 60%),
-      radial-gradient(900px 420px at -8% 0%, rgba(19, 49, 92, 0.07), transparent 60%);
+      radial-gradient(1100px 480px at 88% -8%, rgb(var(--gold) / 0.12), transparent 60%),
+      radial-gradient(900px 420px at -8% 0%, rgb(var(--ink) / 0.07), transparent 60%);
     background-attachment: fixed;
   }
 
@@ -32,7 +40,7 @@
     letter-spacing: -0.02em;
   }
   ::selection {
-    background: rgba(201, 168, 106, 0.35);
+    background: rgb(var(--gold) / 0.35);
   }
 
   /* Focus styles für Tastatur-Nutzer */

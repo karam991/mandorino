@@ -13,7 +13,7 @@ interface HeaderProps {
  */
 export function Header({ variant = "client" }: HeaderProps) {
   return (
-    <header className="brand-bg text-white sticky top-0 z-40 border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-[color:var(--brand-primary)]/90">
+    <header className="brand-bg text-white sticky top-0 z-40 border-b border-white/10">
       <div className="mx-auto max-w-page px-4 sm:px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Logo variant="white" hideTagline={variant === "team"} />
