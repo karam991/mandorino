@@ -23,7 +23,7 @@ export default function DankePage() {
       <main id="main" className="flex-1">
         <section className="mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-10">
           <div className="card relative overflow-hidden p-6 text-center sm:p-8">
-            {TENANT.brand.mascot !== false ? (
+            {TENANT.brand.mascot === true ? (
               <div className="relative mx-auto mb-3 h-28 w-24">
                 <Mandarin className="h-full w-full" interactive={false} />
                 <span className="check-pop absolute bottom-4 right-0 flex h-10 w-10 items-center justify-center rounded-full brand-bg seal ring-4 ring-white">
