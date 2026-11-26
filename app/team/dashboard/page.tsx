@@ -356,14 +356,14 @@ export default function DashboardPage() {
               <table className="w-full text-sm">
                 <thead className="bg-paper text-left text-xs font-semibold text-muted">
                   <tr>
-                    <th className="px-3 py-3 xl:px-4">Eingang</th>
-                    <th className="px-3 py-3 xl:px-4">Mandant</th>
-                    <th className="px-3 py-3 xl:px-4">Rechtsgebiet</th>
-                    <th className="px-3 py-3 xl:px-4">Status</th>
-                    <th className="px-3 py-3 xl:px-4">Priorität</th>
-                    <th className="px-3 py-3 xl:px-4">RS / Streitwert / Dok.</th>
-                    <th className="px-3 py-3 xl:px-4">Bearbeiter:in</th>
-                    <th className="px-3 py-3 xl:px-4"><span className="sr-only">Aktionen</span></th>
+                    <th className="px-3 py-3">Eingang</th>
+                    <th className="px-3 py-3">Mandant</th>
+                    <th className="px-3 py-3">Rechtsgebiet</th>
+                    <th className="px-3 py-3">Status</th>
+                    <th className="px-3 py-3">Priorität</th>
+                    <th className="px-3 py-3">RS / Streitwert / Dok.</th>
+                    <th className="px-3 py-3">Bearbeiter:in</th>
+                    <th className="px-3 py-3"><span className="sr-only">Aktionen</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -374,7 +374,7 @@ export default function DashboardPage() {
                     const docCount = Array.isArray(docs) ? docs.length : 0;
                     return (
                       <tr key={l.id} className="group border-t border-line transition-colors hover:bg-paper/70">
-                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap text-muted">
+                        <td className="px-3 py-3 whitespace-nowrap text-muted">
                           {new Date(l.createdAt).toLocaleString("de-DE", {
                             day: "2-digit",
                             month: "2-digit",
@@ -382,14 +382,14 @@ export default function DashboardPage() {
                             minute: "2-digit",
                           })}
                         </td>
-                        <td className="px-3 py-3 xl:px-4">
+                        <td className="px-3 py-3">
                           <div className="flex items-start gap-2.5">
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full brand-bg text-xs font-semibold text-white" aria-hidden="true">
                               {(l.contact.firstName?.[0] ?? "") + (l.contact.lastName?.[0] ?? "")}
                             </span>
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-x-2">
-                                <span className="font-medium text-ink-dark">
+                                <span className="font-medium text-ink-dark xl:whitespace-nowrap">
                                   {l.contact.firstName} {l.contact.lastName}
                                 </span>
                                 {l.clientType === "business" && (
@@ -410,14 +410,14 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-3 py-3 xl:px-4">{l.areaLabel}</td>
-                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap">
+                        <td className="px-3 py-3">{l.areaLabel}</td>
+                        <td className="px-3 py-3 whitespace-nowrap">
                           <StatusPill status={l.status} />
                         </td>
-                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap">
+                        <td className="px-3 py-3 whitespace-nowrap">
                           <PriorityPill tier={l.priority.tier} />
                         </td>
-                        <td className="px-3 py-3 xl:px-4">
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-1.5">
                             <InsurancePill insurance={l.insurance} />
                             {docCount > 0 && (
@@ -435,8 +435,8 @@ export default function DashboardPage() {
                             {l.claimValue ?? <span className="text-muted">—</span>}
                           </div>
                         </td>
-                        <td className="px-3 py-3 xl:px-4 text-muted">{assignedName}</td>
-                        <td className="px-3 py-3 xl:px-4 text-right whitespace-nowrap">
+                        <td className="px-3 py-3 text-muted">{assignedName}</td>
+                        <td className="px-3 py-3 text-right whitespace-nowrap">
                           <Link
                             href={`/team/lead/${l.id}`}
                             className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-[border-color,box-shadow] group-hover:border-ink/40 group-hover:shadow-soft"
