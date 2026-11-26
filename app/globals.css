@@ -186,15 +186,15 @@
     @apply pill before:content-[''] before:mr-1.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-current bg-gray-100 text-gray-600;
   }
 
-  /* Priorität-Pills */
+  /* Priorität: nur „hoch" ist gefüllt, damit es heraussticht */
   .prio-high {
-    @apply pill before:content-[''] before:mr-1.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-current bg-red-100 text-red-800;
+    @apply pill border border-danger bg-danger font-semibold text-white;
   }
   .prio-medium {
-    @apply pill before:content-[''] before:mr-1.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-current bg-amber-100 text-amber-800;
+    @apply pill border border-gold-dark text-ink-dark;
   }
   .prio-low {
-    @apply pill before:content-[''] before:mr-1.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-current bg-gray-100 text-gray-700;
+    @apply pill border border-transparent px-0 text-muted;
   }
 }
 

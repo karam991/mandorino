@@ -246,7 +246,9 @@ export function seedDemoLeadsIfEmpty(): void {
       areaId,
       areaLabel,
       areaData,
-      urgency: "Innerhalb dieser Woche",
+      urgency: overrides.urgency ?? "Innerhalb dieser Woche",
+      insurance: overrides.insurance,
+      claimValue: overrides.claimValue,
       consentGiven: true,
     };
     const priority = area
@@ -320,7 +322,7 @@ export function seedDemoLeadsIfEmpty(): void {
       "Verkehrsrecht",
       {
         topic: "Bußgeldbescheid / Punkte",
-        incidentDate: new Date(now - 5 * day).toISOString().slice(0, 10),
+        incidentDate: new Date(now - 20 * day).toISOString().slice(0, 10),
         fault: "Mitschuldfrage offen",
         injury: "Keine Personenschäden",
         damageRange: "Bis 2.500 €",
@@ -336,12 +338,12 @@ export function seedDemoLeadsIfEmpty(): void {
       {
         id: "lead_demo_verk_1",
         createdAt: new Date(now - 1 * day).toISOString(),
-        urgency: "Innerhalb dieser Woche",
+        urgency: "Innerhalb dieses Monats",
         insurance: { status: "Ja", provider: "Allianz" },
         claimValue: "Unter 2.000 €",
-        userNotes: "Möchte Einspruch einlegen, wartet auf Rückmeldung.",
+        userNotes: "Einspruch bereits selbst eingelegt, wartet auf Rückmeldung.",
         aiSummary:
-          "Mandant erhielt vor 5 Tagen einen Bußgeldbescheid und einen Anhörungsbogen. Keine Personenschäden, geringfügiger Sachschaden. Mandant beschreibt die Mitschuldfrage als offen. Diese Zusammenfassung enthält keine rechtliche Bewertung.",
+          "Mandant erhielt vor rund drei Wochen einen Bußgeldbescheid und einen Anhörungsbogen. Keine Personenschäden, geringfügiger Sachschaden. Mandant beschreibt die Mitschuldfrage als offen. Diese Zusammenfassung enthält keine rechtliche Bewertung.",
         status: "in_bearbeitung",
         assignedToUserId: "user_admin",
       },
@@ -357,7 +359,7 @@ export function seedDemoLeadsIfEmpty(): void {
         estateRange: "250.000–1 Mio. €",
         description:
           "Vater ist verstorben; im Testament komplett vom Erbe ausgeschlossen. Wohnungseigentum vorhanden.",
-        documents: ["Sterbeurkunde", "Testament / Erbvertrag", "Grundbuchauszüge"],
+        documents: ["Sterbeurkunde"],
       },
       {
         firstName: "Aylin",
@@ -371,9 +373,9 @@ export function seedDemoLeadsIfEmpty(): void {
         createdAt: new Date(now - 2 * day).toISOString(),
         urgency: "Innerhalb dieses Monats",
         insurance: { status: "Nein" },
-        claimValue: "Über 50.000 €",
+        claimValue: "Weiß ich nicht",
         aiSummary:
-          "Mandantin berichtet, vor einem Monat den Vater verloren zu haben. Notarielles Testament liegt vor; die Mandantin gibt an, darin nicht bedacht zu sein. Nachlass im sechsstelligen Bereich, Grundbuchauszüge liegen vor. Diese Zusammenfassung enthält keine rechtliche Bewertung.",
+          "Mandantin berichtet, vor einem Monat den Vater verloren zu haben. Notarielles Testament liegt vor; die Mandantin gibt an, darin nicht bedacht zu sein. Nachlass im sechsstelligen Bereich, bisher liegt nur die Sterbeurkunde vor. Diese Zusammenfassung enthält keine rechtliche Bewertung.",
         status: "neu",
       },
     ),
