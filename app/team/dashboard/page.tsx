@@ -348,21 +348,19 @@ export default function DashboardPage() {
                 </li>
               ))}
             </ul>
-            {/* Ab lg: Tabelle; ab xl etwas breiter als der Textblock, damit keine Spalte abgeschnitten wird */}
-            <div className="card relative hidden overflow-x-auto animate-fade-up delay-3 lg:block xl:-mx-24">
+            {/* Ab lg: Tabelle, bündig mit dem Seiteninhalt */}
+            <div className="card relative hidden overflow-x-auto animate-fade-up delay-3 lg:block">
               <table className="w-full text-sm">
                 <thead className="bg-paper text-left text-xs font-semibold text-muted">
                   <tr>
-                    <th className="px-4 py-3">Eingang</th>
-                    <th className="px-4 py-3">Mandant</th>
-                    <th className="px-4 py-3">Rechtsgebiet</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Priorität</th>
-                    <th className="px-4 py-3">RS</th>
-                    <th className="px-4 py-3">Streitwert</th>
-                    <th className="px-4 py-3">Dok.</th>
-                    <th className="px-4 py-3">Bearbeiter:in</th>
-                    <th className="px-4 py-3"><span className="sr-only">Aktionen</span></th>
+                    <th className="px-3 py-3 xl:px-4">Eingang</th>
+                    <th className="px-3 py-3 xl:px-4">Mandant</th>
+                    <th className="px-3 py-3 xl:px-4">Rechtsgebiet</th>
+                    <th className="px-3 py-3 xl:px-4">Status</th>
+                    <th className="px-3 py-3 xl:px-4">Priorität</th>
+                    <th className="px-3 py-3 xl:px-4">RS / Streitwert / Dok.</th>
+                    <th className="px-3 py-3 xl:px-4">Bearbeiter:in</th>
+                    <th className="px-3 py-3 xl:px-4"><span className="sr-only">Aktionen</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -373,7 +371,7 @@ export default function DashboardPage() {
                     const docCount = Array.isArray(docs) ? docs.length : 0;
                     return (
                       <tr key={l.id} className="group border-t border-line transition-colors hover:bg-paper/70">
-                        <td className="px-4 py-3 whitespace-nowrap text-muted">
+                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap text-muted">
                           {new Date(l.createdAt).toLocaleString("de-DE", {
                             day: "2-digit",
                             month: "2-digit",
@@ -381,58 +379,61 @@ export default function DashboardPage() {
                             minute: "2-digit",
                           })}
                         </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2 flex-wrap">
+                        <td className="px-3 py-3 xl:px-4">
+                          <div className="flex items-start gap-2.5">
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full brand-bg text-xs font-semibold text-white" aria-hidden="true">
                               {(l.contact.firstName?.[0] ?? "") + (l.contact.lastName?.[0] ?? "")}
                             </span>
-                            <span className="font-medium text-ink-dark">
-                              {l.contact.firstName} {l.contact.lastName}
-                            </span>
-                            {l.clientType === "business" && (
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-x-2">
+                                <span className="font-medium text-ink-dark">
+                                  {l.contact.firstName} {l.contact.lastName}
+                                </span>
+                                {l.clientType === "business" && (
+                                  <span
+                                    className="pill bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs"
+                                    title="Anfrage im Auftrag eines Unternehmens / Selbstständig"
+                                  >
+                                    B2B
+                                  </span>
+                                )}
+                              </div>
+                              {l.clientType === "business" && l.contact.business?.companyName && (
+                                <div className="max-w-[200px] truncate text-xs text-ink-dark/80">
+                                  {l.contact.business.companyName}
+                                </div>
+                              )}
+                              <div className="text-xs text-muted">PLZ {l.contact.postalCode}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-3 py-3 xl:px-4">{l.areaLabel}</td>
+                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap">
+                          <StatusPill status={l.status} />
+                        </td>
+                        <td className="px-3 py-3 xl:px-4 whitespace-nowrap">
+                          <PriorityPill tier={l.priority.tier} />
+                        </td>
+                        <td className="px-3 py-3 xl:px-4">
+                          <div className="flex items-center gap-1.5">
+                            <InsurancePill insurance={l.insurance} />
+                            {docCount > 0 && (
                               <span
-                                className="pill bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs"
-                                title="Anfrage im Auftrag eines Unternehmens / Selbstständig"
+                                className="inline-flex items-center gap-1 pill bg-paper-dark text-ink-dark"
+                                title={`${docCount} Unterlage(n) genannt`}
                               >
-                                B2B
+                                <Paperclip className="h-3 w-3" aria-hidden />
+                                {docCount}
+                                <span className="sr-only"> Unterlagen</span>
                               </span>
                             )}
                           </div>
-                          {l.clientType === "business" && l.contact.business?.companyName && (
-                            <div className="text-xs text-ink-dark/80 truncate max-w-[220px]">
-                              {l.contact.business.companyName}
-                            </div>
-                          )}
-                          <div className="text-xs text-muted">PLZ {l.contact.postalCode}</div>
+                          <div className="mt-1 whitespace-nowrap text-xs text-ink-dark/90">
+                            {l.claimValue ?? <span className="text-muted">—</span>}
+                          </div>
                         </td>
-                        <td className="px-4 py-3">{l.areaLabel}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <StatusPill status={l.status} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <PriorityPill tier={l.priority.tier} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <InsurancePill insurance={l.insurance} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-ink-dark/90">
-                          {l.claimValue ?? <span className="text-muted">—</span>}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          {docCount > 0 ? (
-                            <span
-                              className="inline-flex items-center gap-1 pill bg-paper-dark text-ink-dark"
-                              title={`${docCount} Unterlage(n) genannt`}
-                            >
-                              <Paperclip className="h-3 w-3" aria-hidden />
-                              {docCount}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-muted">—</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-muted">{assignedName}</td>
-                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <td className="px-3 py-3 xl:px-4 text-muted">{assignedName}</td>
+                        <td className="px-3 py-3 xl:px-4 text-right whitespace-nowrap">
                           <Link
                             href={`/team/lead/${l.id}`}
                             className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-[border-color,box-shadow] group-hover:border-ink/40 group-hover:shadow-soft"
