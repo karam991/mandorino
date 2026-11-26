@@ -100,7 +100,7 @@ export default function TeamLoginPage() {
         <div className="stage-light absolute inset-0 -z-10" aria-hidden="true" />
         <div className="animate-fade-up">
           <div className="text-xl font-semibold tracking-tight">{TENANT.brand.kanzleiName}</div>
-          <div className="mt-0.5 text-xs text-white/60">{TENANT.brand.tagline}</div>
+          <div className="mt-0.5 text-xs text-white/70">{TENANT.brand.tagline}</div>
         </div>
 
         <div className="flex flex-col items-start gap-8">

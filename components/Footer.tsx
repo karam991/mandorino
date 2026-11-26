@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto flex max-w-page flex-col items-center justify-between gap-4 px-4 py-10 text-sm sm:flex-row sm:px-6">
         <div>
           <div className="font-semibold tracking-tight text-white">{TENANT.brand.kanzleiName}</div>
-          <div className="mt-0.5 text-xs text-white/55">
+          <div className="mt-0.5 text-xs text-white/70">
             © {new Date().getFullYear()} · {TENANT.brand.tagline}
           </div>
         </div>
