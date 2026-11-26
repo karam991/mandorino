@@ -157,8 +157,17 @@ export default function DashboardPage() {
             <div>
               <span className="pill bg-ink/10 text-ink-dark mb-2">Lead-Übersicht</span>
               <h1 className="text-title font-semibold">Eingegangene Anfragen</h1>
-              <p className="text-sm text-muted mt-1">
-                Angemeldet als {user.name} ({user.role}) · {TENANT.brand.kanzleiName}
+              <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-muted">
+                <span>
+                  Angemeldet als {user.name} ({user.role}) · {TENANT.brand.kanzleiName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="touch-target rounded underline underline-offset-2 transition-colors hover:text-ink-dark active:text-ink"
+                >
+                  Abmelden
+                </button>
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
@@ -170,12 +179,6 @@ export default function DashboardPage() {
                 title="Aktuelle gefilterte Lead-Liste als CSV exportieren (Excel-kompatibel)"
               >
                 Export CSV ({filtered.length})
-              </button>
-              <Link href="/team/analytics" className="btn-secondary">
-                Auswertung
-              </Link>
-              <button type="button" onClick={handleLogout} className="btn-secondary">
-                Abmelden
               </button>
             </div>
           </div>
