@@ -16,7 +16,7 @@ Zuweisung, Notizen und Bearbeitungs-Priorität.
 > Template-Fallback).
 
 <p align="center">
-  <img src="docs/screenshots/01-landing-hero.png" alt="Landing Page von Mandorino mit Mandarinen-Maskottchen" width="900">
+  <img src="docs/screenshots/01-landing-hero.png" alt="Landing Page einer Kanzlei mit Vorschau des geführten Chats" width="900">
 </p>
 
 ## Auf einen Blick
@@ -30,8 +30,8 @@ Zuweisung, Notizen und Bearbeitungs-Priorität.
 - **Produktdenken:** White-Label für Kanzleien, RDG-konform (keine Rechtsberatung) — vom Chat-Skript bis zum KI-Prompt.
 - **Sicherheit statt Fassade:** Der Server baut jeden Lead selbst (Validierung, `insert` statt `upsert`, signierte KI-Zusammenfassung), `/team/*` wird per Middleware und Supabase-RLS geschützt, Rate-Limits pro IP und E-Mail, Embed-Allowlist per CSP.
 - **Datenfluss mit Datenbank:** Supabase/Postgres mit Row-Level-Security, atomare Historien-Einträge per SQL-Funktion, Demo-Modus nur per explizitem Flag.
-- **Qualität:** 21 Unit-Tests (Vitest), TypeScript strict, CI auf GitHub Actions, automatisierter Accessibility-Check (axe, WCAG 2.2 AA) ohne Verstöße auf allen Seiten.
-- **UX:** responsiv (Mobile-Menü, Karten statt Tabelle), Lade-/Fehler-/Leerzustände, Toasts, `prefers-reduced-motion`, 3D-Mandarinen-Maskottchen als reines SVG (ohne 3D-Bibliothek, `/embed` bleibt bei 107 kB).
+- **Qualität:** 26 Unit-Tests (Vitest), TypeScript strict, CI auf GitHub Actions, automatisierter Accessibility-Check (axe, WCAG 2.2 AA) ohne Verstöße auf allen Seiten.
+- **UX:** responsiv (Mobile-Menü, Karten statt Tabelle), Lade-/Fehler-/Leerzustände, Toasts, `prefers-reduced-motion`, 3D-Mandarinen-Maskottchen als reines SVG (ohne 3D-Bibliothek, `/embed` liegt bei rund 109 kB).
 
 <details>
 <summary><b>Weitere Screenshots</b></summary>
@@ -135,7 +135,7 @@ TENANT = {
 - **Maskottchen:** Die 3D-Mandarine gehört zu Mandorino und erscheint im Team-Login. Auf den
   öffentlichen Seiten (Landing, Danke) ist sie aus; eine Kanzlei kann sie mit
   `brand.mascot: true` einschalten.
-- **Aktive Rechtsgebiete** werden auf der Landing automatisch als Karten
+- **Aktive Rechtsgebiete** werden auf der Landing automatisch als Liste
   gerendert und stehen im Chat als Themen-Auswahl zur Verfügung. Das Team kann
   sie unter `/team/settings` umschalten.
 - **Team:** mehrere Accounts mit Rolle (`admin` / `bearbeiter`). `TENANT.team` liefert
