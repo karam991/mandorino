@@ -133,8 +133,8 @@ TENANT = {
   `brand-border` im UI verwendet.
 - **Logo:** wenn `logoUrl` gesetzt, wird das Bild geladen, sonst Text-Fallback.
 - **Maskottchen:** Die 3D-Mandarine gehört zu Mandorino und erscheint im Team-Login. Auf den
-  öffentlichen Seiten (Landing, Danke) ist sie aus; eine Kanzlei kann sie mit
-  `brand.mascot: true` einschalten.
+  öffentlichen Seiten (Landing, Danke) ist sie standardmäßig aus; eine Kanzlei kann sie mit
+  `brand.mascot: true` einschalten (die Demo-Kanzlei hat sie an).
 - **Aktive Rechtsgebiete** werden auf der Landing automatisch als Liste
   gerendert und stehen im Chat als Themen-Auswahl zur Verfügung. Das Team kann
   sie unter `/team/settings` umschalten.

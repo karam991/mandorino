@@ -106,7 +106,7 @@ export const TENANT: TenantConfig = {
     logoUrl: null, // null → Text-Logo-Fallback
     primary: "#13315C", // ink
     accent: "#C9A86A", // gold
-    mascot: false, // true → Mandarine auch auf Landing- und Danke-Seite (Team-Login zeigt sie immer)
+    mascot: true, // nur Demo-Kanzlei; ohne diesen Wert bleibt die Mandarine auf Landing/Danke aus
   },
   legal: {
     impressumUrl: "/impressum",

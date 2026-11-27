@@ -111,9 +111,10 @@ export default function HomePage() {
             </div>
 
             {/* Illustration: Vorschau des geführten Gesprächs (rein dekorativ) */}
-            <div className="animate-fade-up delay-3 relative hidden lg:block" aria-hidden="true">
+            <div className="animate-fade-up delay-3 hidden lg:flex lg:flex-col lg:gap-2" aria-hidden="true">
               {TENANT.brand.mascot === true && (
-                <Mandarin className="pointer-events-none absolute -top-40 -right-6 z-10 h-36 w-32" />
+                /* Eigener Platz über der Karte: kann Kopf und Nachrichten nie verdecken */
+                <Mandarin className="pointer-events-none h-44 w-40 self-center xl:h-48 xl:w-44" />
               )}
               <div className="surface-raised rounded-2xl p-5 text-ink-dark">
                 <div className="mb-4 flex items-center gap-3 border-b border-line pb-4">
