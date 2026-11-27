@@ -25,7 +25,9 @@ export default function EmbedPage() {
 
     let last = 0;
     const post = () => {
-      const h = Math.ceil(document.documentElement.scrollHeight);
+      // Höhe des Inhalts, nicht des Dokuments: scrollHeight ist nie kleiner als das
+      // Iframe selbst, das Eltern-Skript würde es dadurch endlos vergrößern.
+      const h = Math.ceil(el.getBoundingClientRect().height);
       if (h !== last) {
         last = h;
         window.parent?.postMessage(
@@ -38,7 +40,7 @@ export default function EmbedPage() {
     // Initial + bei Mutationen
     post();
     const ro = new ResizeObserver(post);
-    ro.observe(document.body);
+    ro.observe(el);
     const mo = new MutationObserver(post);
     mo.observe(document.body, { subtree: true, childList: true, attributes: true });
     window.addEventListener("resize", post);
@@ -59,9 +61,9 @@ export default function EmbedPage() {
   return (
     <div ref={containerRef} className="bg-paper text-ink">
       {/* Kompakter Brand-Streifen statt voller Header */}
-      <div className="brand-bg text-white px-4 py-2 text-sm font-medium flex items-center justify-between">
+      <div className="brand-bg flex items-center justify-between gap-3 py-2 pl-4 pr-14 text-sm font-medium text-white">
         <span>{TENANT.brand.kanzleiName}</span>
-        <span className="text-xs opacity-80">Anfrage · keine Rechtsberatung</span>
+        <span className="text-right text-xs opacity-80">Anfrage · keine Rechtsberatung</span>
       </div>
 
      <Suspense fallback={<div className="p-4 text-center text-muted">Lade…</div>}>

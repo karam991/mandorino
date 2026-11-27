@@ -84,7 +84,8 @@
   iframe.src = base + "/embed";
   iframe.setAttribute("allow", "clipboard-write");
   iframe.style.cssText =
-    "border:0;width:100%;height:560px;display:block;background:transparent;flex:1;";
+    "border:0;width:100%;height:560px;display:block;background:transparent;flex:0 1 auto;";
+  // kein "flex:1": dessen flex-basis 0 überschreibt die Höhe (Iframe wäre nur 150px hoch)
 
   frameWrap.appendChild(closeBtn);
   frameWrap.appendChild(iframe);

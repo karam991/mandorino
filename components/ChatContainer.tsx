@@ -363,7 +363,9 @@ export function ChatContainer({
 
   const scrollClass =
     variant === "embed"
-      ? "bg-paper/70 p-3 sm:p-4 flex-1 overflow-y-auto min-h-[240px] focus-visible:-outline-offset-2"
+      ? // Feste Höhe ohne vh-Einheiten: das Iframe richtet sich nach dem Inhalt,
+        // der Verlauf scrollt innen und das Eingabefeld bleibt in Reichweite
+        "bg-paper/70 p-3 sm:p-4 h-60 overflow-y-auto focus-visible:-outline-offset-2"
       : // Höhe so gewählt, dass das Eingabefeld ohne Scrollen sichtbar bleibt
         "bg-paper/70 p-4 sm:p-5 overflow-y-auto h-[clamp(11rem,calc(100dvh-35rem),28rem)] sm:h-[clamp(14rem,calc(100dvh-30rem),28rem)] focus-visible:-outline-offset-2";
 

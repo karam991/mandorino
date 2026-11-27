@@ -1,7 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { TENANT } from "@/lib/tenant.config";
 
@@ -12,24 +12,28 @@ import { TENANT } from "@/lib/tenant.config";
  * Website ein Conversion-Tracking auslösen kann.
  */
 export default function EmbedDankePage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.parent?.postMessage(
       { type: "mandorino:submitted", tenant: TENANT.brand.kanzleiName },
       "*",
     );
+    const el = containerRef.current;
+    if (!el) return;
     const post = () => {
-      const h = Math.ceil(document.documentElement.scrollHeight);
+      const h = Math.ceil(el.getBoundingClientRect().height);
       window.parent?.postMessage({ type: "mandorino:resize", height: h }, "*");
     };
     post();
     const ro = new ResizeObserver(post);
-    ro.observe(document.body);
+    ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
   return (
-    <div className="bg-paper">
+    <div ref={containerRef} className="bg-paper">
       <div className="brand-bg text-white px-4 py-2 text-sm font-medium">
         {TENANT.brand.kanzleiName}
       </div>
