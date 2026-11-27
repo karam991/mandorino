@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("offen");
   const [areaFilter, setAreaFilter] = useState<string>("alle");
   const [assigneeFilter, setAssigneeFilter] = useState<string>("alle");
+  const [highOnly, setHighOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("priority");
 
@@ -89,6 +90,11 @@ export default function DashboardPage() {
       list = list.filter((l) => l.assignedToUserId === assigneeFilter);
     }
 
+    // Schnellfilter „Hohe Priorität"
+    if (highOnly) {
+      list = list.filter((l) => l.priority.tier === "high");
+    }
+
     // Suche
     const q = search.trim().toLowerCase();
     if (q) {
@@ -120,22 +126,25 @@ export default function DashboardPage() {
     });
 
     return list;
-  }, [leads, statusFilter, areaFilter, assigneeFilter, search, sortKey, user]);
+  }, [leads, statusFilter, areaFilter, assigneeFilter, highOnly, search, sortKey, user]);
 
   if (!user) return null;
 
+  const openLeads = leads.filter(
+    (l) => l.status === "neu" || l.status === "in_bearbeitung" || l.status === "kontaktiert",
+  );
   const counts = {
     total: leads.length,
-    open: leads.filter(
-      (l) => l.status === "neu" || l.status === "in_bearbeitung" || l.status === "kontaktiert",
-    ).length,
+    open: openLeads.length,
+    openHigh: openLeads.filter((l) => l.priority.tier === "high").length,
     mine: leads.filter((l) => l.assignedToUserId === user.id).length,
   };
 
-  /** KPI-Karten als Schnellfilter: setzt Status/Bearbeiter, leert Rechtsgebiet + Suche. */
-  function applyQuick(status: StatusFilter, assignee: string) {
+  /** KPI-Karten als Schnellfilter: setzt Status/Bearbeiter/Priorität, leert Rechtsgebiet + Suche. */
+  function applyQuick(status: StatusFilter, assignee: string, onlyHigh = false) {
     setStatusFilter(status);
     setAssigneeFilter(assignee);
+    setHighOnly(onlyHigh);
     setAreaFilter("alle");
     setSearch("");
   }
@@ -186,21 +195,22 @@ export default function DashboardPage() {
           {/* KPIs */}
           <div className="grid sm:grid-cols-3 gap-4 mb-6 animate-fade-up delay-1">
             <Kpi
-              label="Leads gesamt"
-              value={counts.total}
-              active={statusFilter === "alle" && assigneeFilter === "alle"}
-              onSelect={() => applyQuick("alle", "alle")}
-            />
-            <Kpi
               label="Offen (neu / in Bearbeitung / kontaktiert)"
               value={counts.open}
-              active={statusFilter === "offen" && assigneeFilter === "alle"}
+              active={statusFilter === "offen" && assigneeFilter === "alle" && !highOnly}
               onSelect={() => applyQuick("offen", "alle")}
+            />
+            <Kpi
+              label="Hohe Priorität (offen)"
+              value={counts.openHigh}
+              // bleibt markiert, solange der Prioritätsfilter wirkt – auch nach Änderung anderer Filter
+              active={highOnly}
+              onSelect={() => applyQuick("offen", "alle", true)}
             />
             <Kpi
               label="Mir zugewiesen"
               value={counts.mine}
-              active={assigneeFilter === "mine" && statusFilter === "alle"}
+              active={assigneeFilter === "mine" && statusFilter === "alle" && !highOnly}
               onSelect={() => applyQuick("alle", "mine")}
             />
           </div>
@@ -255,10 +265,11 @@ export default function DashboardPage() {
               </select>
             </FilterField>
 
-            <FilterField label="Suche">
+            <FilterField label="Suche" wide>
               <input
                 className="input py-2"
-                placeholder="Name, E-Mail, PLZ, Stichwort…"
+                title="Sucht in Name, E-Mail, PLZ, Rechtsgebiet und Stichworten"
+                placeholder="Name, E-Mail, PLZ …"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -361,7 +372,10 @@ export default function DashboardPage() {
                     <th className="px-3 py-3">Rechtsgebiet</th>
                     <th className="px-3 py-3">Status</th>
                     <th className="px-3 py-3">Priorität</th>
-                    <th className="px-3 py-3">RS / Streitwert / Dok.</th>
+                    <th className="whitespace-nowrap px-3 py-3" title="Rechtsschutz, Streitwert und Dokumente">
+                      <span aria-hidden="true">Eckdaten</span>
+                      <span className="sr-only">Eckdaten: Rechtsschutz, Streitwert und Dokumente</span>
+                    </th>
                     <th className="px-3 py-3">Bearbeiter:in</th>
                     <th className="px-3 py-3"><span className="sr-only">Aktionen</span></th>
                   </tr>
@@ -503,9 +517,9 @@ function Kpi({
   );
 }
 
-function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterField({ label, children, wide = false }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (
-    <label className="flex flex-col gap-1 min-w-[160px] flex-1">
+    <label className={`flex flex-col gap-1 ${wide ? "min-w-[236px] flex-[1.3]" : "min-w-[160px] flex-1"}`}>
       <span className="text-xs text-muted">{label}</span>
       {children}
     </label>
