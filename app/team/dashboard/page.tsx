@@ -217,7 +217,7 @@ export default function DashboardPage() {
 
           {/* Filter-Leiste */}
           <div className="card p-4 mb-5 flex flex-wrap gap-3 items-end animate-fade-up delay-2">
-            <FilterField label="Status">
+            <FilterField label="Status" wide>
               <select
                 className="input py-2"
                 value={statusFilter}
@@ -269,7 +269,7 @@ export default function DashboardPage() {
               <input
                 className="input py-2"
                 title="Sucht in Name, E-Mail, PLZ, Rechtsgebiet und Stichworten"
-                placeholder="Name, E-Mail, PLZ …"
+                placeholder="Name, E-Mail, PLZ"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -519,7 +519,7 @@ function Kpi({
 
 function FilterField({ label, children, wide = false }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (
-    <label className={`flex flex-col gap-1 ${wide ? "min-w-[236px] flex-[1.3]" : "min-w-[160px] flex-1"}`}>
+    <label className={`flex flex-col gap-1 ${wide ? "min-w-[214px] flex-[1.2]" : "min-w-[160px] flex-1"}`}>
       <span className="text-xs text-muted">{label}</span>
       {children}
     </label>
